@@ -1,21 +1,11 @@
-mod problem0;
+mod problem1;
 mod util;
 
-use log::{debug, error, info, log_enabled, trace, warn, Level};
+use log::info;
 
 fn main() {
     env_logger::init();
-    println!("Hello, world!");
-    println!("Log Level {}", Level::max());
-    println!("Log level {}", log_enabled!(Level::Info));
-    println!("Log level {}", log_enabled!(Level::Debug));
-    println!("Log level {}", log_enabled!(Level::Error));
-    println!("Log level {}", log_enabled!(Level::Warn));
-    println!("Log level {}", log_enabled!(Level::Trace));
-
-    info!("[INFO] Level");
-    warn!("[WARN] Level");
-    error!("[ERROR] Level");
-    debug!("[DEBUG] Level");
-    trace!("[DEBUG] Level");
+    let input1 = problem1::parse_input(problem1::INPUT_PATH);
+    info!("Solution1.1: {:?}", problem1::solve_part1(&input1));
+    info!("Solution1.2: {:?}", problem1::solve_part2(&input1));
 }
