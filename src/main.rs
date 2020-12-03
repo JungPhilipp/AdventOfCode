@@ -1,3 +1,4 @@
+mod playground;
 mod problems_2020;
 mod util;
 
