@@ -1,13 +1,33 @@
+use crate::util::parse::read_lines;
+
 pub static INPUT_PATH: &str = "src/problems_2020/problem3/input.txt.txt";
 
-pub fn parse_input(path_to_input: &str) -> Vec<i32> {
-    vec![]
+enum ITEM {
+    TREE,
+    SNOW,
 }
-pub fn solve_part1(input: &Vec<i32>) -> i32 {
+pub fn parse_input(path_to_input: &str) -> Vec<Vec<ITEM>> {
+    read_lines(path_to_input)
+        .into_iter()
+        .map(|line| {
+            line.chars()
+                .into_iter()
+                .map(|c| {
+                    if c == '#' {
+                        ITEM::TREE
+                    } else if c == '.' {
+                        ITEM::SNOW
+                    }
+                })
+                .collect()
+        })
+        .collect()
+}
+pub fn solve_part1(input: &Vec<Vec<ITEM>>) -> i32 {
     0
 }
 
-pub fn solve_part2(input: &Vec<i32>) -> i32 {
+pub fn solve_part2(input: &Vec<Vec<ITEM>>) -> i32 {
     0
 }
 
