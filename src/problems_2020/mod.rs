@@ -10,4 +10,7 @@ pub fn solve() {
     let input2 = problem2::parse_input(problem2::INPUT_PATH);
     info!("Solution1.1: {:?}", problem2::solve_part1(&input2));
     info!("Solution1.2: {:?}", problem2::solve_part2(&input2));
+    let input3 = problem3::parse_input(problem3::INPUT_PATH);
+    info!("Solution1.1: {:?}", problem3::solve_part1(&input3));
+    info!("Solution1.2: {:?}", problem3::solve_part2(&input3));
 }
