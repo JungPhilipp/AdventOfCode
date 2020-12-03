@@ -1,6 +1,6 @@
 use crate::util::parse::read_lines_with_separator;
 
-pub static INPUT_PATH: &str = "src/problem2/input.txt";
+pub static INPUT_PATH: &str = "src/problems_2020/problem2/input.txt.txt";
 
 pub fn parse_input(path_to_input: &str) -> Vec<(usize, usize, char, String)> {
     let split_lines = read_lines_with_separator(path_to_input, ':');
