@@ -1,5 +1,4 @@
 use crate::util::parse::read_lines_with_separator;
-use log::info;
 
 pub static INPUT_PATH: &str = "src/problems_2020/problem8/input.txt";
 
@@ -56,7 +55,6 @@ pub fn solve_part2(input: &Vec<(String, i32)>) -> i32 {
         let mut i: i32 = 0;
         while (i as usize) < input_cpy.len() {
             let (instruction, arg) = &input_cpy[i as usize];
-            info!("{} {} {} {}", i, instruction, arg, j);
             if ins_watch[i as usize] {
                 break;
             }

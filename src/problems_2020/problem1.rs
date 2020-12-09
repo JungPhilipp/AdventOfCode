@@ -7,7 +7,7 @@ pub fn parse_input(path_to_input: &str) -> Vec<i32> {
     parse_to::<i32>(path_to_input)
 }
 pub fn solve_part1(input: &Vec<i32>) -> i32 {
-    two_sum(&input, 2020)[0].iter().product()
+    two_sum(&input, &2020)[0].iter().product()
 }
 
 pub fn solve_part2(input: &Vec<i32>) -> i32 {
