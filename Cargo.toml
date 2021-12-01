@@ -2,15 +2,15 @@
 name = "aoc"
 version = "0.1.0"
 authors = ["Philipp Jung <philipp.jung@mailbox.org>"]
-edition = "2018"
+edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-log = {version = "", features = ["release_max_level_warn"]}
-env_logger = ""
-test-env-log = ""
-num = ""
-itertools = ""
-regex = ""
-array_tool = ""
+log = {version = "*", features = ["release_max_level_warn"]}
+env_logger = "*"
+test-log = "*"
+num = "*"
+itertools = "*"
+regex = "*"
+array_tool = "*"

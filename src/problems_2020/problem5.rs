@@ -76,7 +76,7 @@ fn binary_space_partition(flags: &Vec<bool>, mut min: i32, mut max: i32) -> i32 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use test_env_log::test;
+    use test_log::test;
 
     #[test]
     fn binary_partition() {

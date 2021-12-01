@@ -114,4 +114,5 @@ fabric.properties
 # More information here https://doc.rust-lang.org/cargo/guide/cargo-toml-vs-cargo-lock.html
 Cargo.lock
 
+.vscode
 # End of https://www.toptal.com/developers/gitignore/api/rust,clion
