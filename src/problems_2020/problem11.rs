@@ -75,7 +75,7 @@ pub fn solve_part2(input: &Vec<Vec<char>>) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use test_env_log::test;
+    use test_log::test;
 
     #[test]
     fn part1() {

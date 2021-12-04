@@ -33,6 +33,6 @@ mod tests {
     }
     #[test]
     fn part2() {
-        assert_eq!(solve_part2(&parse_input(INPUT_PATH)), 212900130);
+        assert_eq!(solve_part2(&parse_input(INPUT_PATH)), 1706);
     }
 }
