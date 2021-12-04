@@ -1,12 +1,17 @@
 #[cfg(test)]
 mod tests {
-    /*
-    use itertools::Itertools;
-        #[test]
-        fn test() {
-            for i in (0..10).into_iter().window(2) {
-                print(i);
-            }
+    use log::debug;
+    use ndarray::Array2;
+    use test_log::test;
+
+    #[test]
+    fn some_test() {
+        let array = Array2::from_shape_vec((2, 2), vec![1, 2, 3, 4]).unwrap();
+        for e in array.diag() {
+            debug!("{}", e);
         }
-    */
+        for e in array.view().reversed_axes().diag() {
+            debug!("{}", e);
+        }
+    }
 }
