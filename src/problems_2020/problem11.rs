@@ -68,7 +68,7 @@ pub fn solve_part1(input: &Vec<Vec<char>>) -> usize {
         .sum()
 }
 
-pub fn solve_part2(input: &Vec<Vec<char>>) -> usize {
+pub fn solve_part2(_input: &Vec<Vec<char>>) -> usize {
     0
 }
 

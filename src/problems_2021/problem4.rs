@@ -1,11 +1,9 @@
-use std::ptr;
-
 use itertools::Itertools;
-use log::{debug, info, warn};
+use log::info;
 use ndarray::Array2;
 use retain_mut::RetainMut;
 
-use crate::util::parse::{parse_to, read_lines};
+use crate::util::parse::read_lines;
 
 pub static INPUT_PATH: &str = "src/problems_2021/problem4/input.txt";
 
