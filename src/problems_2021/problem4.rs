@@ -1,6 +1,9 @@
+use std::ptr;
+
 use itertools::Itertools;
 use log::{debug, info, warn};
 use ndarray::Array2;
+use retain_mut::RetainMut;
 
 use crate::util::parse::{parse_to, read_lines};
 
@@ -89,7 +92,24 @@ pub fn solve_part1(input: &Input) -> i32 {
 }
 
 pub fn solve_part2(input: &Input) -> i32 {
-    0
+    let (numbers, input_boards) = input;
+    let mut boards = input_boards.clone();
+
+    let mut last_board = boards[0].clone();
+    let mut last_number = 0;
+    for number in numbers {
+        boards.retain_mut(|board| {
+            if set_number(board, *number) {
+                last_board = board.clone();
+                last_number = *number;
+                false
+            } else {
+                true
+            }
+        });
+    }
+    info!("{:?} : {:?}", last_number, last_board);
+    return last_number * sum_no_hit(&last_board);
 }
 
 #[cfg(test)]
@@ -99,10 +119,10 @@ mod tests {
 
     #[test]
     fn part1() {
-        assert_eq!(solve_part1(&parse_input(INPUT_PATH)), 1676);
+        assert_eq!(solve_part1(&parse_input(INPUT_PATH)), 41668);
     }
     #[test]
     fn part2() {
-        assert_eq!(solve_part2(&parse_input(INPUT_PATH)), 212900130);
+        assert_eq!(solve_part2(&parse_input(INPUT_PATH)), 10478);
     }
 }
