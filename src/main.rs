@@ -1,3 +1,4 @@
+#![feature(step_trait)]
 mod playground;
 mod problems_2020;
 mod problems_2021;

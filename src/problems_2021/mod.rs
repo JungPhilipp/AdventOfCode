@@ -2,6 +2,7 @@ mod problem1;
 mod problem2;
 mod problem3;
 mod problem4;
+mod problem5;
 
 use log::info;
 
@@ -18,4 +19,7 @@ pub fn solve() {
     let input4 = problem4::parse_input(problem4::INPUT_PATH);
     info!("Solution4.1: {:?}", problem4::solve_part1(&input4));
     info!("Solution4.2: {:?}", problem4::solve_part2(&input4));
+    let input5 = problem5::parse_input(problem5::INPUT_PATH);
+    info!("Solution5.1: {:?}", problem5::solve_part1(&input5));
+    info!("Solution5.2: {:?}", problem5::solve_part2(&input5));
 }
