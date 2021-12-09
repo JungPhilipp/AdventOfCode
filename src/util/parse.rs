@@ -1,3 +1,4 @@
+use itertools::Itertools;
 use log::debug;
 use std::fs::File;
 use std::io::{self, BufRead};
@@ -37,6 +38,19 @@ where
     let file_content = lines
         .map(|line| line.unwrap().parse::<T>().unwrap())
         .collect();
+    debug!("Contents: {:?}", file_content);
+    return file_content;
+}
+pub fn parse_to_vec(path: &str) -> Vec<Vec<i32>> {
+    let lines = lines_iter(path).expect("Error reading file");
+    let file_content = lines
+        .map(|line| {
+            line.unwrap()
+                .chars()
+                .map(|char| char.to_digit(10).unwrap() as i32)
+                .collect_vec()
+        })
+        .collect_vec();
     debug!("Contents: {:?}", file_content);
     return file_content;
 }
