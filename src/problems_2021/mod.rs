@@ -1,5 +1,6 @@
 mod problem1;
 mod problem10;
+mod problem11;
 mod problem2;
 mod problem3;
 mod problem4;
@@ -42,4 +43,7 @@ pub fn solve() {
     let input10 = problem10::parse_input(problem10::INPUT_PATH);
     info!("Solution10.1: {:?}", problem10::solve_part1(&input10));
     info!("Solution10.2: {:?}", problem10::solve_part2(&input10));
+    let input11 = problem11::parse_input(problem11::INPUT_PATH);
+    info!("Solution11.1: {:?}", problem11::solve_part1(&input11));
+    info!("Solution11.2: {:?}", problem11::solve_part2(&input11));
 }
