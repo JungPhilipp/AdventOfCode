@@ -3,13 +3,13 @@ use std::collections::{HashMap, HashSet};
 pub static INPUT_PATH: &str = "src/problems_2020/problem7/input.txt";
 
 pub fn parse_line(line: &str) -> (String, Vec<(i32, String)>) {
-    let words = line.split(" ").collect::<Vec<&str>>();
+    let words = line.split(' ').collect::<Vec<&str>>();
     let color = words[0..2].join(" ");
     let contents = words[4..]
         .join(" ")
         .split(", ")
         .map(|s| {
-            let parts = s.split(" ").collect::<Vec<&str>>();
+            let parts = s.split(' ').collect::<Vec<&str>>();
             let count = parts[0].parse::<i32>();
             let bag_color = parts[1..3].join(" ");
             match count {
@@ -31,7 +31,7 @@ pub fn parse_input(path_to_input: &str) -> HashMap<String, Vec<(i32, String)>> {
 
 pub fn find_bag(
     input: &HashMap<String, Vec<(i32, String)>>,
-    key: &String,
+    key: &str,
     target: &str,
 ) -> Option<String> {
     if key == target {
@@ -40,10 +40,10 @@ pub fn find_bag(
     let mut stack = HashSet::new();
     stack.insert(key);
     while !stack.is_empty() {
-        let current = stack.iter().next().unwrap().clone();
+        let current = *stack.iter().next().unwrap();
         stack.remove(current);
         if current == target {
-            return Some(key.clone());
+            return Some(key.to_string());
         }
         for (_, value) in input.get(current).unwrap() {
             stack.insert(value);
@@ -54,8 +54,8 @@ pub fn find_bag(
 
 pub fn solve_part1(input: &HashMap<String, Vec<(i32, String)>>) -> usize {
     input
-        .into_iter()
-        .filter_map(|(key, _)| find_bag(input, &key, "shiny gold"))
+        .iter()
+        .filter_map(|(key, _)| find_bag(input, key, "shiny gold"))
         .count()
 }
 

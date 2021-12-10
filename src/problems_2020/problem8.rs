@@ -24,7 +24,7 @@ fn exec_instruction(instruction: &str, arg: i32, i_pointer: &mut i32, accumulato
     }
 }
 
-pub fn solve_part1(input: &Vec<(String, i32)>) -> i32 {
+pub fn solve_part1(input: &[(String, i32)]) -> i32 {
     let mut accumulator = 0;
     let mut ins_watch = vec![false; input.len()];
     let mut i: i32 = 0;
@@ -41,9 +41,9 @@ pub fn solve_part1(input: &Vec<(String, i32)>) -> i32 {
     accumulator
 }
 
-pub fn solve_part2(input: &Vec<(String, i32)>) -> i32 {
+pub fn solve_part2(input: &[(String, i32)]) -> i32 {
     for j in 0..input.len() {
-        let mut input_cpy = input.clone();
+        let mut input_cpy = input.to_vec();
         if input_cpy[j].0 == "nop" {
             input_cpy[j].0 = "jmp".to_string();
         } else if input_cpy[j].0 == "jmp" {

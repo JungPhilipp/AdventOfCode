@@ -11,7 +11,7 @@ pub fn parse_input(path_to_input: &str) -> Vec<i32> {
     parsed.into_iter().sorted().collect()
 }
 
-pub fn solve_part1(input: &Vec<i32>) -> usize {
+pub fn solve_part1(input: &[i32]) -> usize {
     let sorted = input.windows(2).map(|w| w[1] - w[0]).collect::<Vec<i32>>();
     let ones = sorted.iter().filter(|x| *x == &1).count();
     let threes = sorted.iter().filter(|x| *x == &3).count();
@@ -19,7 +19,7 @@ pub fn solve_part1(input: &Vec<i32>) -> usize {
 }
 
 fn backtrack(
-    input: &Vec<i32>,
+    input: &[i32],
     start_index: usize,
     end_index: usize,
     lookup: &mut HashMap<usize, usize>,
@@ -40,7 +40,7 @@ fn backtrack(
     lookup.insert(start_index, solution_count);
     solution_count
 }
-pub fn solve_part2(input: &Vec<i32>) -> usize {
+pub fn solve_part2(input: &[i32]) -> usize {
     backtrack(
         input,
         0,

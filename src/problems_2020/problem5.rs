@@ -1,3 +1,5 @@
+use itertools::Itertools;
+
 use crate::util::parse::read_lines;
 
 pub static INPUT_PATH: &str = "src/problems_2020/problem5/input.txt";
@@ -26,9 +28,9 @@ pub fn parse_input(path_to_input: &str) -> Vec<(Vec<bool>, Vec<bool>)> {
         })
         .collect()
 }
-fn get_rows_cols(input: &Vec<(Vec<bool>, Vec<bool>)>) -> Vec<(i32, i32, i32)> {
+fn get_rows_cols(input: &[(Vec<bool>, Vec<bool>)]) -> Vec<(i32, i32, i32)> {
     input
-        .into_iter()
+        .iter()
         .map(|(first, second)| {
             let row = binary_space_partition(first, 0, 127);
             let col = binary_space_partition(second, 0, 7);
@@ -37,7 +39,7 @@ fn get_rows_cols(input: &Vec<(Vec<bool>, Vec<bool>)>) -> Vec<(i32, i32, i32)> {
         .collect()
 }
 
-pub fn solve_part1(input: &Vec<(Vec<bool>, Vec<bool>)>) -> i32 {
+pub fn solve_part1(input: &[(Vec<bool>, Vec<bool>)]) -> i32 {
     get_rows_cols(input)
         .into_iter()
         .map(|(_, _, id)| id)
@@ -45,12 +47,12 @@ pub fn solve_part1(input: &Vec<(Vec<bool>, Vec<bool>)>) -> i32 {
         .unwrap()
 }
 
-pub fn solve_part2(input: &Vec<(Vec<bool>, Vec<bool>)>) -> i32 {
-    let mut ids: Vec<i32> = get_rows_cols(input)
+pub fn solve_part2(input: &[(Vec<bool>, Vec<bool>)]) -> i32 {
+    let ids: Vec<i32> = get_rows_cols(input)
         .into_iter()
         .map(|(_, _, id)| id)
-        .collect();
-    ids.sort();
+        .sorted()
+        .collect_vec();
 
     for i in *ids.first().unwrap()..*ids.last().unwrap() {
         if ids.contains(&(i + 1)) && ids.contains(&(i - 1)) && !ids.contains(&i) {
@@ -60,7 +62,7 @@ pub fn solve_part2(input: &Vec<(Vec<bool>, Vec<bool>)>) -> i32 {
     panic!();
 }
 
-fn binary_space_partition(flags: &Vec<bool>, mut min: i32, mut max: i32) -> i32 {
+fn binary_space_partition(flags: &[bool], mut min: i32, mut max: i32) -> i32 {
     for flag in flags {
         let middle = min + (max - min) / 2;
         if *flag {
@@ -81,10 +83,10 @@ mod tests {
     #[test]
     fn binary_partition() {
         assert_eq!(
-            binary_space_partition(&vec![false, true, false, true, true, false, false], 0, 127),
+            binary_space_partition(&[false, true, false, true, true, false, false], 0, 127),
             44
         );
-        assert_eq!(binary_space_partition(&vec![true, false, true], 0, 7), 5);
+        assert_eq!(binary_space_partition(&[true, false, true], 0, 7), 5);
     }
 
     #[test]

@@ -23,34 +23,34 @@ pub fn parse_input(path_to_input: &str) -> Vec<Directions> {
         })
         .collect()
 }
-pub fn solve_part1(input: &Vec<Directions>) -> i32 {
+pub fn solve_part1(input: &[Directions]) -> i32 {
     let mut horizontal_position = 0;
     let mut depth = 0;
     for direction in input {
-        match direction {
-            &Directions::Forward(x) => horizontal_position += x,
-            &Directions::Down(x) => depth += x,
-            &Directions::Up(x) => depth -= x,
+        match *direction {
+            Directions::Forward(x) => horizontal_position += x,
+            Directions::Down(x) => depth += x,
+            Directions::Up(x) => depth -= x,
         };
     }
     debug!("{:?}, {:?}", horizontal_position, depth);
     horizontal_position * depth
 }
 
-pub fn solve_part2(input: &Vec<Directions>) -> i32 {
+pub fn solve_part2(input: &[Directions]) -> i32 {
     let mut horizontal_position = 0;
     let mut depth = 0;
     let mut aim = 0;
     for direction in input {
-        match direction {
-            &Directions::Forward(x) => {
+        match *direction {
+            Directions::Forward(x) => {
                 horizontal_position += x;
                 depth += aim * x;
             }
-            &Directions::Down(x) => {
+            Directions::Down(x) => {
                 aim += x;
             }
-            &Directions::Up(x) => {
+            Directions::Up(x) => {
                 aim -= x;
             }
         };

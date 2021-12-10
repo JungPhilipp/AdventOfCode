@@ -6,12 +6,12 @@ pub static INPUT_PATH: &str = "src/problems_2020/problem1/input.txt";
 pub fn parse_input(path_to_input: &str) -> Vec<i32> {
     parse_to::<i32>(path_to_input)
 }
-pub fn solve_part1(input: &Vec<i32>) -> i32 {
-    two_sum(&input, &2020)[0].iter().product()
+pub fn solve_part1(input: &[i32]) -> i32 {
+    two_sum(input, &2020)[0].iter().product()
 }
 
-pub fn solve_part2(input: &Vec<i32>) -> i32 {
-    three_sum(&input, 2020)[0].iter().product()
+pub fn solve_part2(input: &[i32]) -> i32 {
+    three_sum(input, 2020)[0].iter().product()
 }
 
 #[cfg(test)]

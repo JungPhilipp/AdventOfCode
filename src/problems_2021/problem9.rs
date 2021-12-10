@@ -1,10 +1,9 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
-use array_tool::vec::Intersect;
 use itertools::Itertools;
 use log::debug;
 
-use crate::util::parse::{parse_to, parse_to_vec, read_lines};
+use crate::util::parse::parse_to_vec;
 
 pub static INPUT_PATH: &str = "src/problems_2021/problem9/input.txt";
 
@@ -50,9 +49,6 @@ fn basin_size(height_map: &[i32], index_low_point: i32, line_width: i32) -> i32 
     let mut candidates = vec![index_low_point];
     while !candidates.is_empty() {
         let candidate = candidates.pop().unwrap();
-        let line_index = candidate / line_width;
-        let line_start = line_index * line_width;
-        let line_end = line_start + line_width;
         let height = height_map[candidate as usize];
         if height == 9 || processed.contains(&(candidate as usize)) {
             processed.insert(candidate as usize);

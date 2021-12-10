@@ -8,7 +8,7 @@ type Input = Vec<i32>;
 
 pub fn parse_input(path_to_input: &str) -> Input {
     read_lines(path_to_input)[0]
-        .split(",")
+        .split(',')
         .map(|number| number.parse::<i32>().unwrap())
         .collect_vec()
 }

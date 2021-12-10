@@ -1,13 +1,9 @@
-use std::{
-    collections::{HashMap, HashSet},
-    panic,
-};
+use std::panic;
 
-use array_tool::vec::Intersect;
 use itertools::Itertools;
 use log::debug;
 
-use crate::util::parse::{parse_to, parse_to_vec, read_lines};
+use crate::util::parse::read_lines;
 
 pub static INPUT_PATH: &str = "src/problems_2021/problem10/input.txt";
 
@@ -143,7 +139,7 @@ fn autocomplete_score(line: &Line) -> usize {
                 _ => panic!("Illegal suggestion: {:?}", bracket),
             };
     }
-    if line.len() > 0 {
+    if line.is_empty() {
         assert!(score > 0);
     }
     score
@@ -190,6 +186,6 @@ mod tests {
 
     #[test]
     fn part2() {
-        assert_eq!(solve_part2(&parse_input(INPUT_PATH)), 35287552);
+        assert_eq!(solve_part2(&parse_input(INPUT_PATH)), 3094671161);
     }
 }

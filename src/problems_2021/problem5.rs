@@ -18,7 +18,7 @@ pub fn parse_input(path_to_input: &str) -> Input {
             line.split(" -> ")
                 .map(|point| {
                     point
-                        .split(",")
+                        .split(',')
                         .map(|number| number.parse::<i32>().unwrap())
                         .collect_tuple::<Point>()
                         .unwrap()

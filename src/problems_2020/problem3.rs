@@ -4,9 +4,9 @@ pub static INPUT_PATH: &str = "src/problems_2020/problem3/input.txt";
 
 #[derive(PartialEq)]
 pub enum ITEM {
-    TREE,
-    SNOW,
-    INVALID,
+    Tree,
+    Snow,
+    Invalid,
 }
 pub fn parse_input(path_to_input: &str) -> Vec<Vec<ITEM>> {
     read_lines(path_to_input)
@@ -16,39 +16,39 @@ pub fn parse_input(path_to_input: &str) -> Vec<Vec<ITEM>> {
                 .into_iter()
                 .map(|c| {
                     if c == '#' {
-                        ITEM::TREE
+                        ITEM::Tree
                     } else if c == '.' {
-                        ITEM::SNOW
+                        ITEM::Snow
                     } else {
-                        ITEM::INVALID
+                        ITEM::Invalid
                     }
                 })
                 .collect()
         })
         .collect()
 }
-fn trees_hit(input: &Vec<Vec<ITEM>>, dx: usize, dy: usize) -> usize {
+fn trees_hit(input: &[Vec<ITEM>], dx: usize, dy: usize) -> usize {
     let mut num_trees = 0;
     let mut x = 0;
     let mut y = 0;
     let x_max = input[0].len();
     let y_max = input.len();
     while y < y_max {
-        num_trees += (input[y][x] == ITEM::TREE) as usize;
+        num_trees += (input[y][x] == ITEM::Tree) as usize;
         x = (x + dx) % x_max;
         y += dy;
     }
     num_trees
 }
-pub fn solve_part1(input: &Vec<Vec<ITEM>>) -> usize {
+pub fn solve_part1(input: &[Vec<ITEM>]) -> usize {
     trees_hit(input, 3, 1)
 }
 
-pub fn solve_part2(input: &Vec<Vec<ITEM>>) -> usize {
+pub fn solve_part2(input: &[Vec<ITEM>]) -> usize {
     let slopes = vec![(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)];
     slopes
         .into_iter()
-        .map(|dpos| trees_hit(input, dpos.0, dpos.1))
+        .map(|pos| trees_hit(input, pos.0, pos.1))
         .product()
 }
 

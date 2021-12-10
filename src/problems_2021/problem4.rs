@@ -1,7 +1,6 @@
 use itertools::Itertools;
 use log::info;
 use ndarray::Array2;
-use retain_mut::RetainMut;
 
 use crate::util::parse::read_lines;
 
@@ -13,7 +12,7 @@ type Input = (Vec<i32>, Vec<Board>);
 pub fn parse_input(path_to_input: &str) -> Input {
     let lines = read_lines(path_to_input);
     let numbers = lines[0]
-        .split(",")
+        .split(',')
         .map(|number| number.parse::<i32>().unwrap())
         .collect_vec();
     let boards = lines
@@ -36,7 +35,7 @@ pub fn parse_input(path_to_input: &str) -> Input {
             .unwrap()
         })
         .collect_vec();
-    return (numbers, boards);
+    (numbers, boards)
 }
 fn bingo(board: &Board) -> bool {
     for row in board.rows() {
@@ -56,7 +55,7 @@ fn bingo(board: &Board) -> bool {
         return true;
     }
 
-    return false;
+    false
 }
 
 fn set_number(board: &mut Board, new_number: i32) -> bool {
@@ -65,7 +64,7 @@ fn set_number(board: &mut Board, new_number: i32) -> bool {
             *hit = true;
         }
     });
-    return bingo(&board);
+    bingo(board)
 }
 
 fn sum_no_hit(board: &Board) -> i32 {
@@ -82,11 +81,11 @@ pub fn solve_part1(input: &Input) -> i32 {
     for number in numbers {
         for board in &mut boards {
             if set_number(board, *number) {
-                return number * sum_no_hit(&board);
+                return number * sum_no_hit(board);
             }
         }
     }
-    return 0;
+    0
 }
 
 pub fn solve_part2(input: &Input) -> i32 {
@@ -107,7 +106,7 @@ pub fn solve_part2(input: &Input) -> i32 {
         });
     }
     info!("{:?} : {:?}", last_number, last_board);
-    return last_number * sum_no_hit(&last_board);
+    last_number * sum_no_hit(&last_board)
 }
 
 #[cfg(test)]

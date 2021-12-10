@@ -15,9 +15,9 @@ pub fn parse_input(path_to_input: &str) -> Vec<(usize, usize, char, String)> {
     }
     result
 }
-pub fn solve_part1(input: &Vec<(usize, usize, char, String)>) -> usize {
+pub fn solve_part1(input: &[(usize, usize, char, String)]) -> usize {
     input
-        .into_iter()
+        .iter()
         .filter(|(min, max, c, s)| {
             let count = s.chars().filter(|ch| ch == c).count();
             *min <= count && count <= *max
@@ -25,9 +25,9 @@ pub fn solve_part1(input: &Vec<(usize, usize, char, String)>) -> usize {
         .count()
 }
 
-pub fn solve_part2(input: &Vec<(usize, usize, char, String)>) -> usize {
+pub fn solve_part2(input: &[(usize, usize, char, String)]) -> usize {
     input
-        .into_iter()
+        .iter()
         .filter(|(first, second, c, s)| {
             (s.chars().nth(*first).unwrap() == *c) ^ (s.chars().nth(*second).unwrap() == *c)
         })

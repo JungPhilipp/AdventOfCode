@@ -8,7 +8,7 @@ pub fn parse_input(path_to_input: &str) -> Vec<i64> {
     parse_to::<i64>(path_to_input)
 }
 
-pub fn sliding_sum(input: &Vec<i64>, window_size: usize) -> i64 {
+pub fn sliding_sum(input: &[i64], window_size: usize) -> i64 {
     for window in input.windows(window_size + 1) {
         let pairs = two_sum(&window[0..window_size].to_vec(), window.last().unwrap());
         if pairs.is_empty() {
@@ -17,11 +17,11 @@ pub fn sliding_sum(input: &Vec<i64>, window_size: usize) -> i64 {
     }
     panic!("No found");
 }
-pub fn solve_part1(input: &Vec<i64>) -> i64 {
+pub fn solve_part1(input: &[i64]) -> i64 {
     sliding_sum(input, 25)
 }
 
-pub fn solve_part2(input: &Vec<i64>) -> i64 {
+pub fn solve_part2(input: &[i64]) -> i64 {
     let sum = 85848519;
     for i in 0..input.len() {
         let mut current_sum = 0;

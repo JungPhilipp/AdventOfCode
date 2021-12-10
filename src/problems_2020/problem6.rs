@@ -17,21 +17,21 @@ pub fn parse_input(path_to_input: &str) -> Vec<Vec<String>> {
         .collect()
 }
 
-pub fn solve_part1(input: &Vec<Vec<String>>) -> usize {
+pub fn solve_part1(input: &[Vec<String>]) -> usize {
     input
-        .into_iter()
+        .iter()
         .map(|group| group.join("").chars().unique().count())
         .sum()
 }
 
-pub fn solve_part2(input: &Vec<Vec<String>>) -> usize {
+pub fn solve_part2(input: &[Vec<String>]) -> usize {
     let chars: Vec<char> = ('a'..='z').collect();
     input
-        .into_iter()
+        .iter()
         .map(|group| {
             chars
                 .iter()
-                .map(|c| group.into_iter().all(|s| s.contains(*c)) as usize)
+                .map(|c| group.iter().all(|s| s.contains(*c)) as usize)
                 .sum::<usize>()
         })
         .sum()

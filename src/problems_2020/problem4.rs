@@ -23,24 +23,22 @@ pub fn parse_input(path_to_input: &str) -> Vec<HashMap<String, String>> {
         .collect()
 }
 
-pub fn contains_keys(passport: &HashMap<String, String>, required_keys: &Vec<&str>) -> bool {
-    required_keys
-        .into_iter()
-        .all(|key| passport.contains_key(*key))
+pub fn contains_keys(passport: &HashMap<String, String>, required_keys: &[&str]) -> bool {
+    required_keys.iter().all(|key| passport.contains_key(*key))
 }
 
 pub fn valid(key: &str, value: &str) -> bool {
     match key {
         "byr" => match value.parse::<i32>() {
-            Ok(y) => y >= 1920 && y <= 2002,
+            Ok(y) => (1920..=2002).contains(&y),
             Err(_) => false,
         },
         "iyr" => match value.parse::<i32>() {
-            Ok(y) => y >= 2010 && y <= 2020,
+            Ok(y) => (2010..=2020).contains(&y),
             Err(_) => false,
         },
         "eyr" => match value.parse::<i32>() {
-            Ok(y) => y >= 2020 && y <= 2030,
+            Ok(y) => (2020..=2030).contains(&y),
             Err(_) => false,
         },
         "hgt" => {
@@ -48,12 +46,12 @@ pub fn valid(key: &str, value: &str) -> bool {
             let cm_re = Regex::new(r"^\d{3}cm$").unwrap();
             if in_re.is_match(value) {
                 match value[..2].parse::<i32>() {
-                    Ok(y) => y >= 59 && y <= 76,
+                    Ok(y) => (59..=76).contains(&y),
                     Err(_) => false,
                 }
             } else if cm_re.is_match(value) {
                 match value[..3].parse::<i32>() {
-                    Ok(y) => y >= 150 && y <= 193,
+                    Ok(y) => (150..=193).contains(&y),
                     Err(_) => false,
                 }
             } else {
@@ -77,18 +75,18 @@ pub fn valid(key: &str, value: &str) -> bool {
     }
 }
 
-pub fn solve_part1(input: &Vec<HashMap<String, String>>) -> usize {
+pub fn solve_part1(input: &[HashMap<String, String>]) -> usize {
     let required_keys = vec!["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"];
     input
-        .into_iter()
+        .iter()
         .filter(|passport| contains_keys(passport, &required_keys))
         .count()
 }
 
-pub fn solve_part2(input: &Vec<HashMap<String, String>>) -> usize {
+pub fn solve_part2(input: &[HashMap<String, String>]) -> usize {
     let required_keys = vec!["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"];
     input
-        .into_iter()
+        .iter()
         .filter(|passport| {
             required_keys.iter().all(|key| match passport.get(*key) {
                 None => false,

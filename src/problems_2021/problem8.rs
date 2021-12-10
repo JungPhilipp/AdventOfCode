@@ -1,6 +1,5 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
-use array_tool::vec::Intersect;
 use itertools::Itertools;
 
 use crate::util::parse::read_lines;
@@ -16,7 +15,7 @@ pub fn parse_input(path_to_input: &str) -> Input {
         .map(|line| {
             line.split_whitespace()
                 .filter_map(|group| {
-                    if group.contains("|") {
+                    if group.contains('|') {
                         None
                     } else {
                         Some(group.to_string())
@@ -61,11 +60,10 @@ fn line_to_digits(input: &Line) -> Vec<i32> {
             7 => Some(8),
             _ => None,
         };
-        if mapped.is_some() {
-            digits[mapped.unwrap()] = pattern.clone();
+        if let Some(index) = mapped {
+            digits[index] = pattern.clone();
         }
     }
-    let cf: Pattern = digits[1].intersection(&digits[7]).copied().collect();
     let bd = &digits[4] - &digits[1];
 
     // len 6 && contains 4
