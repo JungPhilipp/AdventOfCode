@@ -1,10 +1,6 @@
-use std::{
-    collections::{hash_map::DefaultHasher, HashMap, HashSet},
-    hash::{self, Hash, Hasher},
-};
+use std::collections::HashMap;
 
 use itertools::Itertools;
-use log::debug;
 
 use crate::util::parse::read_lines;
 

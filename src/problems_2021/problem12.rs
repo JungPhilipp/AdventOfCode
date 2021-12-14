@@ -1,3 +1,4 @@
+#![allow(clippy::ptr_arg)]
 use std::collections::{HashMap, HashSet};
 
 use itertools::Itertools;
@@ -8,7 +9,6 @@ pub static INPUT_PATH: &str = "src/problems_2021/problem12/input.txt";
 
 type Edge = String;
 type Input = HashMap<Edge, HashSet<Edge>>;
-type Path = Vec<Edge>;
 
 pub fn parse_input(path_to_input: &str) -> Input {
     let input = read_lines(path_to_input)

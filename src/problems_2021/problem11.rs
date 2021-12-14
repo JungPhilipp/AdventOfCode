@@ -1,7 +1,7 @@
-use std::panic;
+#![allow(clippy::ptr_arg)]
 
 use itertools::Itertools;
-use log::debug;
+use log::{debug};
 
 use crate::util::parse::read_lines;
 
@@ -61,7 +61,7 @@ pub fn solve_part1(input: &Input) -> usize {
                     .collect::<String>()
             })
             .join("\n");
-        //println!("Step {} :\n{}", step, display);
+        debug!("Step {} :\n{}", step, display);
         octopuses.iter_mut().flatten().for_each(|pos| *pos += 1);
         let mut flashed = true;
         while flashed {
@@ -101,7 +101,7 @@ pub fn solve_part2(input: &Input) -> i32 {
                     .collect::<String>()
             })
             .join("\n");
-        //println!("Step {} :\n{}", step, display);
+        debug!("Step {} :\n{}", step, display);
         octopuses.iter_mut().flatten().for_each(|pos| *pos += 1);
         let mut flashed = true;
         while flashed {

@@ -1,3 +1,4 @@
+#![allow(clippy::ptr_arg)]
 use std::collections::HashMap;
 
 use itertools::Itertools;

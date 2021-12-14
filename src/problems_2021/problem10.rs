@@ -1,3 +1,4 @@
+#![allow(clippy::ptr_arg)]
 use std::panic;
 
 use itertools::Itertools;

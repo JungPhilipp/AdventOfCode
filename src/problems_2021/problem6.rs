@@ -1,3 +1,4 @@
+#![allow(clippy::ptr_arg)]
 use itertools::Itertools;
 
 use crate::util::parse::read_lines;
