@@ -150,6 +150,6 @@ mod tests {
 
     #[test]
     fn part2() {
-        assert_eq!(solve_part2(&parse_input(INPUT_PATH)), 0);
+        assert_eq!(solve_part2(&parse_input(INPUT_PATH)), 250);
     }
 }
