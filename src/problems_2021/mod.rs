@@ -63,7 +63,5 @@ pub fn solve() {
     let input15 = problem15::parse_input(problem15::INPUT_PATH);
     info!("Solution15.1: {:?}", problem15::solve_part1(&input15));
     info!("Solution15.2: {:?}", problem15::solve_part2(&input15));
-    let input16 = problem16::parse_input(problem16::INPUT_PATH);
-    info!("Solution16.1: {:?}", problem16::solve_part1(&input16));
-    info!("Solution16.2: {:?}", problem16::solve_part2(&input16));
+    problem16::solve();
 }
