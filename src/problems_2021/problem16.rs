@@ -3,18 +3,13 @@ use std::collections::VecDeque;
 use bit_vec::BitVec;
 use hex::FromHex;
 use itertools::Itertools;
-use log::debug;
 
-use crate::util::{
-    index::{expand, flatten},
-    parse::read_lines,
-    shortest_path::{shortest_path, Edge},
-};
-use bit_set::BitSet;
+use crate::util::parse::read_lines;
 
 pub static INPUT_PATH: &str = "src/problems_2021/problem16/input.txt";
 
 type Input = VecDeque<bool>;
+
 #[derive(Clone)]
 pub struct Package {
     version: u8,
@@ -94,14 +89,6 @@ pub fn parse_input(path_to_input: &str) -> Input {
     raw_input[0].clone().into()
 }
 
-fn to_bool_vec(string: &str) -> Vec<bool> {
-    string
-        .chars()
-        .into_iter()
-        .map(|c| c.to_digit(2).unwrap() != 0)
-        .collect_vec()
-}
-
 fn to_number(bits: &[bool]) -> usize {
     bits.iter()
         .rev()
@@ -177,6 +164,14 @@ mod tests {
     use test_log::test;
 
     pub static EXAMPLE_PATH: &str = "src/problems_2021/problem16/example.txt";
+
+    fn to_bool_vec(string: &str) -> Vec<bool> {
+        string
+            .chars()
+            .into_iter()
+            .map(|c| c.to_digit(2).unwrap() != 0)
+            .collect_vec()
+    }
 
     #[test]
     fn example1() {
