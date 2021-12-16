@@ -67,9 +67,7 @@ pub fn solve_part2(input: &Input) -> i32 {
             let y = y_large % dimensions.1 as i32;
             let risk = risk_map[flatten((x, y), dimensions).unwrap() as usize];
             let new_risk = risk + x_tile + y_tile;
-            let tmp = (new_risk - 1) % 9 + 1;
-            assert_ne!(tmp, 0);
-            tmp
+            (new_risk - 1) % 9 + 1
         })
         .collect_vec();
 
