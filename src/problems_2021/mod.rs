@@ -7,6 +7,7 @@ mod problem14;
 mod problem15;
 mod problem16;
 mod problem17;
+mod problem18;
 mod problem2;
 mod problem3;
 mod problem4;
@@ -66,4 +67,5 @@ pub fn solve() {
     info!("Solution15.2: {:?}", problem15::solve_part2(&input15));
     problem16::solve();
     problem17::solve();
+    problem18::solve();
 }
