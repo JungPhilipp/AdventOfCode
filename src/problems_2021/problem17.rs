@@ -1,7 +1,4 @@
-use std::{
-    collections::HashSet,
-    ops::{self, Range},
-};
+use std::ops::{self, Range};
 
 use log::info;
 macro_rules! _INPUT_PATH {
@@ -105,7 +102,7 @@ fn shoot(mut pos: Position, mut v: Velocity, target: &Target) -> Option<(Velocit
 }
 
 fn initial_velocity_ranges(start: &Position, target: &Target) -> (Range<i32>, Range<i32>) {
-    let v_x_range = {
+    let _v_x_range = {
         if target.x_range.contains(&start.x) {
             target.x_range.start - start.x..target.x_range.end - start.x
         } else if start.x < target.x_range.start {
@@ -114,7 +111,7 @@ fn initial_velocity_ranges(start: &Position, target: &Target) -> (Range<i32>, Ra
             target.x_range.end..0
         }
     };
-    let v_y_range = {
+    let _v_y_range = {
         let max_y_step = (target.y_range.len() * 1000) as i32 + 1;
         if target.y_range.contains(&start.y) {
             target.y_range.start - start.y..max_y_step
