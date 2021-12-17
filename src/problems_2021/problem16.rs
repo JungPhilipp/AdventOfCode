@@ -165,8 +165,6 @@ mod tests {
     use super::*;
     use test_log::test;
 
-    pub static EXAMPLE_PATH: &str = "src/problems_2021/problem16/example.txt";
-
     fn to_bool_vec(string: &str) -> Vec<bool> {
         string
             .chars()
