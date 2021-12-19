@@ -37,6 +37,9 @@ impl Point {
         Point { x, y, z }
     }
 
+    fn manhattan(&self) -> i32 {
+        self.x.abs() + self.y.abs() + self.z.abs()
+    }
     fn normalized(&self) -> Point {
         self.clone() - Point::from(self.x)
     }
@@ -160,7 +163,6 @@ impl From<i32> for Point {
 #[derive(Debug, Clone)]
 pub struct Scanner {
     pos: Option<Point>,
-    transform: Option<i32>,
     points: Vec<Point>,
 }
 
@@ -168,7 +170,6 @@ impl Scanner {
     fn new(pos: Option<Point>, points: Vec<Point>) -> Scanner {
         Scanner {
             pos: pos,
-            transform: None,
             points: points,
         }
     }
@@ -200,76 +201,103 @@ pub fn parse(input: &str) -> Input {
         .collect_vec()
 }
 
-fn common_points(s0: &mut Scanner, s1: &mut Scanner) -> (usize, Option<Point>) {
-    let mut s1_to_s0 = None;
-    let mut common_points = 0;
-    let mut intersection = HashSet::<Point>::new();
-    let s0_points: HashSet<_> = s0.points.iter().cloned().collect();
-
-    for trans in 0..48 {
-        let s1_points = s1.points.iter().map(|p| p.transformed(trans)).collect_vec();
-        for p0 in &s0.points {
-            for center in s1_points.iter().map(|p1| p0.clone() - p1.clone()) {
-                //let center = Point::new(0, 0, 0);
-                let s1_points_translated: HashSet<Point> = s1_points
+fn fold(
+    known_points: &HashSet<Point>,
+    scanner: &Scanner,
+    min_hits: usize,
+) -> Option<(HashSet<Point>, Point)> {
+    let mut max = HashSet::<Point>::new();
+    for known_point in known_points {
+        for rotation in 0..48 {
+            let unknown_points_rotated = scanner
+                .points
+                .iter()
+                .cloned()
+                .map(|p| p.transformed(rotation))
+                .collect_vec();
+            for translation in unknown_points_rotated
+                .iter()
+                .map(|unknown_point| known_point.clone() - unknown_point.clone())
+            {
+                let unknown_points_transformed: HashSet<Point> = unknown_points_rotated
                     .iter()
                     .cloned()
-                    .map(|p| center.clone() + p)
+                    .map(|p| p + translation.clone())
                     .collect();
-                let common: HashSet<_> = s0_points.intersection(&s1_points_translated).collect();
-                if common.len() >= common_points {
-                    common_points = common.len();
-                    s1_to_s0 = Some(center.clone());
-                    intersection = common.iter().map(|&p| p.clone()).collect();
+                let intersection = unknown_points_transformed
+                    .intersection(known_points)
+                    .collect::<HashSet<_>>();
+                if intersection.len() >= max.len() {
+                    //dbg!(intersection.len());
+                    max = intersection.iter().map(|&i| i.clone()).collect();
                 }
-                if let Some(pos) = s0.pos.clone() {
-                    s1.pos = Some(pos + -center);
+                if intersection.len() >= min_hits {
+                    return Some((unknown_points_transformed, translation));
                 }
             }
         }
     }
-    (common_points, s1_to_s0)
+    //dbg!(max);
+    None
 }
 
-pub fn solve_part1(mut scanners: Input) -> usize {
-    scanners[0].pos = Some(Point::new(0, 0, 0));
-    scanners[0].transform = Some(0);
-    let mut relative_locations = vec![vec![None; scanners.len()]; scanners.len()];
-    for i0 in 0..scanners.len() {
-        for i1 in 0..scanners.len() {
-            let mut s0 = scanners[i0].clone();
-            let mut s1 = scanners[i1].clone();
-            if let (common_points, Some(s1_to_s0)) = common_points(&mut s0, &mut s1) {
-                scanners[i0] = s0;
-                scanners[i1] = s1;
-                if common_points < 12 {
-                    continue;
-                }
-                relative_locations[i1][i0] = Some(s1_to_s0.clone());
-                relative_locations[i0][i1] = Some(-s1_to_s0);
-            } else {
-                panic!()
-            }
-        }
-    }
-    let mut points = scanners[0]
+pub fn solve_part1(input: Input) -> usize {
+    let mut scanners = VecDeque::from(input);
+    let mut known_points = scanners
+        .pop_front()
+        .unwrap()
         .points
-        .iter()
-        .cloned()
-        .collect::<HashSet<Point>>();
-    dbg!(scanners.iter().filter(|s| s.pos.is_none()).count());
-    for scanner in scanners {
-        let pos = scanner.pos.unwrap();
-        for point in scanner.points {
-            points.insert(pos.clone() + point.transformed(scanner.transform.unwrap()));
+        .into_iter()
+        .collect::<HashSet<_>>();
+    let mut index = 0;
+    while !scanners.is_empty() {
+        index = index % scanners.len();
+        dbg!(known_points.len(), index, scanners.len());
+        let scanner = &scanners[index];
+        if let Some((new_known_points, _)) = fold(&known_points, scanner, 12) {
+            known_points.extend(new_known_points);
+            scanners.remove(index);
+            debug!("Remove {}, {} are left", index, scanners.len());
         }
+        index += 1;
     }
 
-    points.len()
+    known_points.len()
 }
 
-pub fn solve_part2(mut scanners: Input) -> i32 {
-    0
+pub fn solve_part2(input: Input) -> i32 {
+    let mut positions = vec![];
+    let mut scanners = VecDeque::from(input);
+    let mut known_points = scanners
+        .pop_front()
+        .unwrap()
+        .points
+        .into_iter()
+        .collect::<HashSet<_>>();
+    let mut index = 0;
+    while !scanners.is_empty() {
+        index = index % scanners.len();
+        dbg!(known_points.len(), index, scanners.len());
+        let scanner = &scanners[index];
+        if let Some((new_known_points, pos)) = fold(&known_points, scanner, 12) {
+            known_points.extend(new_known_points);
+            scanners.remove(index);
+            positions.push(pos);
+            debug!("Remove {}, {} are left", index, scanners.len());
+        }
+        index += 1;
+    }
+
+    let mut max = 0;
+    for pos0 in &positions {
+        for pos1 in &positions {
+            let sum = (pos0.clone() - pos1.clone()).manhattan();
+            if sum > max {
+                max = sum;
+            }
+        }
+    }
+    max
 }
 
 #[cfg(test)]
@@ -278,59 +306,45 @@ mod tests {
     use test_log::test;
 
     #[test]
-    fn test_equal() {
+    fn test_equal_fold() {
         let points = vec![Point::new(0, 0, 0), Point::new(-2, 5, 3)];
-        let mut s0 = Scanner::new(None, points.clone());
-        let mut s1 = s0.clone();
-        let (count, _) = common_points(&mut s0, &mut s1);
-        assert_eq!(count, points.len());
+        let known_points = points.iter().cloned().collect::<HashSet<_>>();
+        let s0 = Scanner::new(None, points);
+        let transformed_points = fold(&known_points, &s0, 2);
+        assert_eq!(transformed_points.unwrap().0, known_points);
     }
 
     #[test]
-    fn test_rotation1() {
-        let scanners = parse(include_str!("problem19/example3.txt"));
-        for i in 0..scanners.len() {
-            for j in 0..scanners.len() {
-                if i == j {
-                    continue;
-                }
-                let mut s0 = scanners[i].clone();
-                let mut s1 = scanners[j].clone();
-                let (count, _) = common_points(&mut s0, &mut s1);
-                assert_eq!(count, 6, "{}, {}", i, j);
-            }
-        }
-    }
-
-    #[test]
-    fn test_translation1() {
+    fn example1() {
         let scanners = parse(include_str!("problem19/example1.txt"));
-        let mut s0 = scanners[0].clone();
-        let mut s1 = scanners[1].clone();
-        let (count, _) = common_points(&mut s0, &mut s1);
-        assert_eq!(count, 3);
+        let known_points = scanners[0].points.iter().cloned().collect::<HashSet<_>>();
+        let transformed_points = fold(&known_points, &scanners[1], 3);
+        assert_eq!(transformed_points.unwrap().0, known_points);
     }
 
     #[test]
-    fn test_rotation2() {
-        let p0 = vec![Point::new(-1, -1, 1), Point::new(-2, -3, 1)];
-        let p1 = vec![Point::new(1, 1, 1), Point::new(3, 1, 2)];
-
-        let (count, _) = common_points(&mut Scanner::new(None, p0), &mut Scanner::new(None, p1));
-        assert_eq!(count, 2);
-    }
-
-    #[test]
-    fn part1() {
+    fn example2() {
         assert_eq!(
             solve_part1(parse(include_str!("problem19/example2.txt"))),
             79
         );
-        //assert_eq!(solve_part1(parse(include_str!(INPUT_PATH!()))), 0);
+    }
+
+    #[test]
+    fn example3() {
+        assert_eq!(
+            solve_part1(parse(include_str!("problem19/example3.txt"))),
+            6
+        );
+    }
+
+    #[test]
+    fn part1() {
+        assert_eq!(solve_part1(parse(include_str!(INPUT_PATH!()))), 383);
     }
 
     #[test]
     fn part2() {
-        //assert_eq!(solve_part2(&parse(include_str!(INPUT_PATH!()))), 0);
+        assert_eq!(solve_part2(parse(include_str!(INPUT_PATH!()))), 0);
     }
 }
