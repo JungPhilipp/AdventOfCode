@@ -11,6 +11,7 @@ mod problem18;
 mod problem19;
 mod problem2;
 mod problem20;
+mod problem21;
 mod problem3;
 mod problem4;
 mod problem5;
@@ -72,4 +73,5 @@ pub fn solve() {
     problem18::solve();
     problem19::solve();
     problem20::solve();
+    problem21::solve();
 }
