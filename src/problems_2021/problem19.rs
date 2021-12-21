@@ -1,13 +1,11 @@
-use core::fmt;
 use std::{
-    collections::{HashMap, HashSet, LinkedList, VecDeque},
+    collections::{HashSet, VecDeque},
     ops::{Add, Index, IndexMut, Neg, Sub},
     panic,
 };
 
 use itertools::Itertools;
 use log::{debug, info};
-use regex::Regex;
 
 macro_rules! INPUT_PATH {
     () => {
@@ -39,9 +37,6 @@ impl Point {
 
     fn manhattan(&self) -> i32 {
         self.x.abs() + self.y.abs() + self.z.abs()
-    }
-    fn normalized(&self) -> Point {
-        self.clone() - Point::from(self.x)
     }
 
     fn flipped(&self, axis: usize) -> Point {
@@ -168,10 +163,7 @@ pub struct Scanner {
 
 impl Scanner {
     fn new(pos: Option<Point>, points: Vec<Point>) -> Scanner {
-        Scanner {
-            pos: pos,
-            points: points,
-        }
+        Scanner { pos, points }
     }
 }
 
@@ -251,7 +243,7 @@ pub fn solve_part1(input: Input) -> usize {
         .collect::<HashSet<_>>();
     let mut index = 0;
     while !scanners.is_empty() {
-        index = index % scanners.len();
+        index %= scanners.len();
         //dbg!(known_points.len(), index, scanners.len());
         let scanner = &scanners[index];
         if let Some((new_known_points, _)) = fold(&known_points, scanner, 12) {
@@ -276,7 +268,7 @@ pub fn solve_part2(input: Input) -> i32 {
         .collect::<HashSet<_>>();
     let mut index = 0;
     while !scanners.is_empty() {
-        index = index % scanners.len();
+        index %= scanners.len();
         //dbg!(known_points.len(), index, scanners.len());
         let scanner = &scanners[index];
         if let Some((new_known_points, pos)) = fold(&known_points, scanner, 12) {

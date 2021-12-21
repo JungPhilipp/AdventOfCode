@@ -1,13 +1,7 @@
-use core::fmt;
-use std::{
-    collections::{HashMap, HashSet, LinkedList, VecDeque},
-    ops::{Add, Index, IndexMut, Neg, Sub},
-    panic,
-};
+use std::{collections::HashSet, panic};
 
 use itertools::Itertools;
-use log::{debug, info};
-use regex::Regex;
+use log::info;
 
 use crate::util::bool_helper::vec_to_number;
 
@@ -67,15 +61,15 @@ pub fn parse(input: &str) -> Input {
         image,
         (
             input.lines().count() as i32 - 3,
-            input.lines().skip(2).next().unwrap().len() as i32,
+            input.lines().nth(2).unwrap().len() as i32,
         ),
     )
 }
 
 fn enhance(input: Input, iterations: usize) -> usize {
-    let (lookup, mut image, (max_x, max_y)) = input;
+    let (lookup, mut image, (_max_x, _max_y)) = input;
     let mut padding = false;
-    for i in 0..iterations {
+    for _ in 0..iterations {
         let mut output = HashSet::new();
         let min_x = *image.iter().map(|(x, _)| x).min().unwrap();
         let max_x = *image.iter().map(|(x, _)| x).max().unwrap();
