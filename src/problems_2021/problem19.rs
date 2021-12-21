@@ -157,13 +157,13 @@ impl From<i32> for Point {
 
 #[derive(Debug, Clone)]
 pub struct Scanner {
-    pos: Option<Point>,
+    _pos: Option<Point>,
     points: Vec<Point>,
 }
 
 impl Scanner {
     fn new(pos: Option<Point>, points: Vec<Point>) -> Scanner {
-        Scanner { pos, points }
+        Scanner { _pos: pos, points }
     }
 }
 

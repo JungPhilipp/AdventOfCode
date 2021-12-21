@@ -1,7 +1,6 @@
 use itertools::Itertools;
 use log::info;
 use ndarray::Array2;
-use retain_mut::RetainMut;
 
 use crate::util::parse::read_lines;
 

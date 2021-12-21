@@ -70,7 +70,7 @@ fn compute_scores(start_pos: usize, max_score: u64, max_rounds: usize) -> Vec<(u
     let mut last_round = HashMap::<(usize, u64), usize>::new();
     last_round.insert((start_pos, 0), 1);
 
-    for round in 0..max_rounds {
+    for round in &mut round_statistics {
         let mut current_round = HashMap::<(usize, u64), usize>::new();
         for ((pos, score), times) in last_round {
             assert_ne!(times, 0);
@@ -111,7 +111,7 @@ fn compute_scores(start_pos: usize, max_score: u64, max_rounds: usize) -> Vec<(u
             .iter()
             .filter_map(|((_, score), times)| if *score < 21 { Some(times) } else { None })
             .sum::<usize>();
-        round_statistics[round] = (finished, not_finished);
+        *round = (finished, not_finished);
         last_round = current_round;
     }
 

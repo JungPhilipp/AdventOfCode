@@ -1,5 +1,5 @@
 #![feature(step_trait)]
-//#![feature(vec_retain_mut)]
+#![feature(vec_retain_mut)]
 #![feature(destructuring_assignment)]
 
 mod playground;
