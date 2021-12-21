@@ -19,7 +19,7 @@ pub fn solve() {
     let input = include_str!(INPUT_PATH!());
     let parsed = parse(input);
     info!(
-        "Solutions Day 16:\nPart1{}\nPart2{}",
+        "Solutions Day 20:\nPart1{}\nPart2{}",
         solve_part1(parsed.clone()),
         solve_part2(parsed)
     );
@@ -252,7 +252,7 @@ pub fn solve_part1(input: Input) -> usize {
     let mut index = 0;
     while !scanners.is_empty() {
         index = index % scanners.len();
-        dbg!(known_points.len(), index, scanners.len());
+        //dbg!(known_points.len(), index, scanners.len());
         let scanner = &scanners[index];
         if let Some((new_known_points, _)) = fold(&known_points, scanner, 12) {
             known_points.extend(new_known_points);
@@ -277,7 +277,7 @@ pub fn solve_part2(input: Input) -> i32 {
     let mut index = 0;
     while !scanners.is_empty() {
         index = index % scanners.len();
-        dbg!(known_points.len(), index, scanners.len());
+        //dbg!(known_points.len(), index, scanners.len());
         let scanner = &scanners[index];
         if let Some((new_known_points, pos)) = fold(&known_points, scanner, 12) {
             known_points.extend(new_known_points);
@@ -331,20 +331,12 @@ mod tests {
     }
 
     #[test]
-    fn example3() {
-        assert_eq!(
-            solve_part1(parse(include_str!("problem19/example3.txt"))),
-            6
-        );
-    }
-
-    #[test]
     fn part1() {
         assert_eq!(solve_part1(parse(include_str!(INPUT_PATH!()))), 383);
     }
 
     #[test]
     fn part2() {
-        assert_eq!(solve_part2(parse(include_str!(INPUT_PATH!()))), 0);
+        assert_eq!(solve_part2(parse(include_str!(INPUT_PATH!()))), 9854);
     }
 }

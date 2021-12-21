@@ -1,5 +1,6 @@
 use itertools::Itertools;
 
+use crate::util::bool_helper::vec_to_number;
 use crate::util::parse::read_lines;
 
 pub static INPUT_PATH: &str = "src/problems_2021/problem3/input.txt";
@@ -13,14 +14,6 @@ pub fn parse_input(path_to_input: &str) -> Vec<Vec<bool>> {
                 .collect_vec()
         })
         .collect()
-}
-fn vec_to_number(binary_number: &[bool]) -> i32 {
-    binary_number
-        .iter()
-        .rev()
-        .enumerate()
-        .map(|(pos, digit)| 2_i32.pow(pos as u32) * *digit as i32)
-        .sum()
 }
 pub fn solve_part1(input: &[Vec<bool>]) -> i32 {
     let num_bits = input[0].len();

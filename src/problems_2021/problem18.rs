@@ -15,7 +15,7 @@ pub fn solve() {
     let input = include_str!(INPUT_PATH!());
     let parsed = parse(input);
     info!(
-        "Solutions Day 16:\nPart1{}\nPart2{}",
+        "Solutions Day 18:\nPart1{}\nPart2{}",
         solve_part1(&parsed),
         solve_part2(&parsed)
     );
