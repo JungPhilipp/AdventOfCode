@@ -100,93 +100,6 @@ struct Cube {
 }
 
 impl Cube {
-    fn sub_cubes(&self, center: (i32, i32, i32)) -> Vec<Cube> {
-        let sub_cubes = [
-            Cube {
-                x_range: self.x_range.start..center.0,
-                y_range: self.y_range.start..center.1,
-                z_range: self.z_range.start..center.2,
-            },
-            Cube {
-                x_range: center.0..self.x_range.end,
-                y_range: self.y_range.start..center.1,
-                z_range: self.z_range.start..center.2,
-            },
-            Cube {
-                x_range: self.x_range.start..center.0,
-                y_range: center.1..self.y_range.end,
-                z_range: self.z_range.start..center.2,
-            },
-            Cube {
-                x_range: center.0..self.x_range.end,
-                y_range: center.1..self.y_range.end,
-                z_range: self.z_range.start..center.2,
-            },
-            Cube {
-                x_range: self.x_range.start..center.0,
-                y_range: self.y_range.start..center.1,
-                z_range: center.2..self.z_range.end,
-            },
-            Cube {
-                x_range: center.0..self.x_range.end,
-                y_range: self.y_range.start..center.1,
-                z_range: center.2..self.z_range.end,
-            },
-            Cube {
-                x_range: self.x_range.start..center.0,
-                y_range: center.1..self.y_range.end,
-                z_range: center.2..self.z_range.end,
-            },
-            Cube {
-                x_range: center.0..self.x_range.end,
-                y_range: center.1..self.y_range.end,
-                z_range: center.2..self.z_range.end,
-            },
-        ]
-        .into_iter()
-        .collect::<HashSet<_>>();
-
-        assert!([1, 4, 8].contains(&sub_cubes.len()));
-        sub_cubes.into_iter().collect_vec()
-    }
-
-    fn edges(&self) -> Vec<(i32, i32, i32)> {
-        let x_end = self.x_range.end - 1;
-        let y_end = self.y_range.end - 1;
-        let z_end = self.z_range.end - 1;
-        let edges = [
-            (self.x_range.start, self.y_range.start, self.z_range.start),
-            (x_end, self.y_range.start, self.z_range.start),
-            (self.x_range.start, y_end, self.z_range.start),
-            (x_end, y_end, self.z_range.start),
-            (self.x_range.start, self.y_range.start, z_end),
-            (x_end, self.y_range.start, z_end),
-            (self.x_range.start, y_end, z_end),
-            (x_end, y_end, z_end),
-        ]
-        .into_iter()
-        .collect::<HashSet<_>>();
-
-        assert!([1, 4, 8].contains(&edges.len()), "{}", edges.len());
-        edges.into_iter().collect_vec()
-    }
-
-    fn contains_point(&self, point: &(i32, i32, i32)) -> bool {
-        self.x_range.contains(&point.0)
-            && self.y_range.contains(&point.1)
-            && self.z_range.contains(&point.2)
-    }
-
-    fn contained_edges(&self, other: &Cube) -> Vec<(i32, i32, i32)> {
-        let contained = other
-            .edges()
-            .into_iter()
-            .filter(|edge| self.contains_point(edge))
-            .collect_vec();
-        assert!([0, 1, 2, 4, 8].contains(&contained.len()));
-        contained
-    }
-
     fn area(&self) -> usize {
         self.x_range.len() * self.y_range.len() * self.z_range.len()
     }
@@ -214,15 +127,6 @@ impl Cube {
             }
         }
         None
-    }
-
-    fn split_sub(self, other: &Cube) -> Vec<Cube> {
-        if let Some(intersection) = self.intersect(other) {
-            if intersection == self {
-                return vec![];
-            }
-        }
-        vec![self]
     }
 }
 
