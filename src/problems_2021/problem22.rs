@@ -132,7 +132,7 @@ mod tests {
 
     #[test]
     fn part1() {
-        assert_eq!(solve_part1(parse(include_str!(INPUT_PATH!()))), 0);
+        assert_eq!(solve_part1(parse(include_str!(INPUT_PATH!()))), 596989);
     }
 
     #[test]
