@@ -7,7 +7,6 @@ use std::{
 use array_tool::vec::Intersect;
 use itertools::Itertools;
 use log::{debug, info};
-use range_union_find::IntRangeUnionFind;
 
 macro_rules! INPUT_PATH {
     () => {
