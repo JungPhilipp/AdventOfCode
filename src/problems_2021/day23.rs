@@ -2,9 +2,11 @@ use crate::util::index::*;
 use array_tool::vec::Intersect;
 use itertools::Itertools;
 use log::{debug, info};
+use ndarray::Array2;
 
 use std::{
-    collections::{HashSet, VecDeque},
+    collections::{HashMap, HashSet, VecDeque},
+    fmt,
     num::ParseIntError,
     ops::{Range, RangeInclusive},
 };
@@ -25,122 +27,172 @@ pub fn solve() {
     );
 }
 
-type Energy = u64;
-type Position = usize;
-type Dimensions = (usize, usize);
-type Input = (
-    HashSet<Position>,
-    Vec<Vec<Position>>,
-    Dimensions,
-    Vec<Amphi>,
-);
+type Input = Array2<Field>;
+type Energy = usize;
+type Position = (usize, usize);
 
-#[derive(Copy, Clone, Debug)]
-pub enum Color {
-    Amber = 1,
-    Bronze = 10,
-    Copper = 100,
-    Desert = 1000,
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Field {
+    Hallway,
+    Wall,
+    Player(char),
 }
 
-impl Color {}
-
-#[derive(Clone, Debug)]
-pub struct Amphi {
-    pos: Position,
-    energy: Energy,
-    color: Color,
-}
-
-impl Amphi {
-    fn from_char(pos: Position, input_color: char) -> Amphi {
-        let color = match input_color {
-            'A' => Color::Amber,
-            'B' => Color::Bronze,
-            'C' => Color::Copper,
-            'D' => Color::Desert,
-            _ => panic!("expected color not {}", input_color),
-        };
-        Amphi {
-            pos,
-            energy: 0,
-            color,
+impl fmt::Display for Field {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Field::Wall => write!(f, "#"),
+            Field::Hallway => write!(f, "."),
+            Field::Player(c) => write!(f, "{}", c),
         }
     }
 }
-fn print_board(board: HashSet<Position>, dimension: (usize, usize)) {
-    let mut output = String::new();
-    for y in 0..dimension.1 {
-        for x in 0..dimension.0 {
-            let flat_index = flatten((x as i32, y as i32), &dimension).unwrap();
-            output += if board.contains(&flat_index) {
-                "."
-            } else {
-                "#"
+
+fn valid_room(color: char) -> HashSet<Position> {
+    match color {
+        'A' => [(2, 3), (3, 3)],
+        'B' => [(2, 5), (3, 5)],
+        'C' => [(2, 7), (3, 7)],
+        'D' => [(2, 9), (3, 9)],
+        _ => panic!(),
+    }
+    .into_iter()
+    .collect()
+}
+
+fn to_energy(color: char) -> usize {
+    match color {
+        'A' => 1,
+        'B' => 10,
+        'C' => 100,
+        'D' => 1000,
+        _ => panic!(),
+    }
+}
+
+fn is_hallway(pos: &Position) -> bool {
+    pos.0 == 1
+}
+
+fn parse(input: &str) -> Input {
+    Array2::<Field>::from_shape_vec(
+        (5, 13),
+        input
+            .lines()
+            .map(|line| {
+                line.chars()
+                    .map(|c| match c {
+                        '#' => Field::Wall,
+                        '.' => Field::Hallway,
+                        'A' | 'B' | 'C' | 'D' => Field::Player(c),
+                        _ => panic!(),
+                    })
+                    .collect_vec()
+            })
+            .flatten()
+            .collect_vec(),
+    )
+    .unwrap()
+}
+
+fn finished(board: &Input, end: &Input) -> bool {
+    debug!("\n{}", board);
+    board.iter().zip(end).all(|(b, e)| *b == *e)
+}
+
+fn next_positions(board: &Input, index: Position) -> Vec<(Position, usize)> {
+    let mut visited = HashMap::<Position, usize>::new();
+    let mut to_visit = vec![(index, 0)];
+    while let Some((pos, steps)) = to_visit.pop() {
+        if let Some(steps_before) = visited.get(&pos) {
+            if *steps_before <= steps {
+                continue;
             }
         }
-        output += "\n";
+        *visited.entry(pos).or_insert(0) = steps;
+
+        for neighbor_index in [
+            (pos.0 - 1, pos.1),
+            (pos.0 + 1, pos.1),
+            (pos.0, pos.1 - 1),
+            (pos.0, pos.1 + 1),
+        ] {
+            if board[neighbor_index] == Field::Hallway {
+                to_visit.push((neighbor_index, steps + 1));
+            }
+        }
     }
-    print!("{}", output);
+
+    visited.into_iter().collect_vec()
 }
-pub fn parse(input: &str) -> Input {
-    let lines = input
-        .lines()
-        .map(|line| line.chars().collect_vec())
-        .collect_vec();
-    let flat_lines = lines.iter().flatten().collect_vec();
-    let rows = lines.len();
-    let cols = lines[0].len();
-    let dimensions = (cols, rows);
-    dbg!(dimensions, flat_lines.len());
-    let mut neighbors: Vec<Vec<Position>> = vec![vec![]; rows * cols];
-    let mut valid_postions = HashSet::new();
-    let amphis = flat_lines
-        .iter()
-        .enumerate()
-        .filter_map(|(flat_index, &&c)| match c {
-            'A' | 'B' | 'C' | 'D' => Some(Amphi::from_char(flat_index, c)),
-            _ => None,
-        })
-        .collect_vec();
-    for (flat_index, x) in flat_lines.iter().enumerate() {
-        if ['.', 'A', 'B', 'C', 'D'].contains(x) {
-            valid_postions.insert(flat_index);
-            let (col_index, row_index) = expand(flat_index as i32, &dimensions);
-            neighbors[flat_index] = [
-                (col_index - 1, row_index),
-                (col_index + 1, row_index),
-                (col_index, row_index - 1),
-                (col_index, row_index + 1),
-            ]
+fn valid_move(board: &Input, color: char, current_pos: &Position, new_pos: &Position) -> bool {
+    // Currently in hallway
+    if is_hallway(current_pos) {
+        let room = valid_room(color);
+        room.contains(new_pos)
+            && room.iter().all(|pos| {
+                if let Field::Player(other_color) = board[*pos] {
+                    other_color == color
+                } else {
+                    true
+                }
+            })
+    }
+    // Currently in room
+    else {
+        let outside_room = [(3, 1), (5, 1), (7, 1), (9, 1)];
+        let room = valid_room(color);
+        (room.contains(new_pos)
+            && room.iter().all(|pos| {
+                if let Field::Player(other_color) = board[*pos] {
+                    other_color == color
+                } else {
+                    true
+                }
+            }))
+            || (is_hallway(new_pos) && !outside_room.contains(new_pos))
+    }
+}
+fn next_steps(board: &Input, index: Position) -> Vec<(Input, Energy)> {
+    match board[index] {
+        Field::Player(color) => next_positions(board, index)
             .into_iter()
-            .filter_map(|index| {
-                if let Some(flat_index) = flatten(index, &dimensions) {
-                    if ['.', 'A', 'B', 'C', 'D'].contains(flat_lines[flat_index]) {
-                        Some(flat_index)
-                    } else {
-                        None
-                    }
+            .filter_map(|(new_pos, steps)| {
+                if valid_move(board, color, &index, &new_pos) {
+                    Some((new_pos, steps * to_energy(color)))
                 } else {
                     None
                 }
             })
-            .collect_vec();
-        }
+            .map(|(next_position, cost)| {
+                let mut new_board = board.clone();
+                new_board[index] = board[next_position].clone();
+                new_board[next_position] = board[index].clone();
+                (new_board, cost)
+            })
+            .collect_vec(),
+        _ => vec![],
     }
-
-    (valid_postions, neighbors, dimensions, amphis)
 }
 
-fn walk(neighbors: Vec<Vec<Position>>, amphis: Vec<Amphi>) -> Option<Energy> {
-    for amphi in amphis {}
-    0
+fn walk(board: Input, energy: Energy, end: &Input) -> Option<Energy> {
+    if finished(&board, end) {
+        return Some(energy);
+    }
+    board
+        .indexed_iter()
+        .filter_map(|(index, _)| {
+            next_steps(&board, index)
+                .into_iter()
+                .filter_map(|(new_board, cost)| walk(new_board, energy + cost, end))
+                .min()
+        })
+        .min()
 }
 
 pub fn solve_part1(input: Input) -> i64 {
-    let (valid_postions, neighbors, dimensions, amphis) = input.clone();
-    debug!("{:?}", input.clone());
-    print_board(valid_postions, dimensions);
+    let end = parse(include_str!("day23/finished.txt"));
+    walk(input, 0, &end);
     0
 }
 pub fn solve_part2(input: Input) -> i64 {
