@@ -1,4 +1,5 @@
 mod day23;
+mod day24;
 mod problem1;
 mod problem10;
 mod problem11;
@@ -78,4 +79,5 @@ pub fn solve() {
     problem21::solve();
     problem22::solve();
     day23::solve();
+    day24::solve();
 }

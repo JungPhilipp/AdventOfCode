@@ -29,7 +29,7 @@ pub fn parse_input(path_to_input: &str) -> Input {
     (dimensions, risk_map.into_iter().flatten().collect_vec())
 }
 
-fn adj_list(grid: &[i32], dimensions: &(usize, usize)) -> Vec<Vec<Edge>> {
+fn adj_list(grid: &[i32], dimensions: &(usize, usize)) -> Vec<Vec<Edge<usize>>> {
     grid.iter()
         .enumerate()
         .map(|(index, risk)| {
@@ -39,7 +39,7 @@ fn adj_list(grid: &[i32], dimensions: &(usize, usize)) -> Vec<Vec<Edge>> {
                 .filter_map(|pos| {
                     flatten(*pos, dimensions).map(|flat_index| Edge {
                         node: flat_index as usize,
-                        cost: *risk as usize,
+                        cost: *risk as i64,
                     })
                 })
                 .collect_vec()
@@ -49,9 +49,12 @@ fn adj_list(grid: &[i32], dimensions: &(usize, usize)) -> Vec<Vec<Edge>> {
 
 pub fn solve_part1(input: &Input) -> i32 {
     let (dimensions, risk_map) = input;
-    let adj = adj_list(risk_map, dimensions);
+    let adj = adj_list(risk_map, dimensions)
+        .into_iter()
+        .enumerate()
+        .collect();
 
-    shortest_path(&adj, 0, adj.len() - 1).unwrap() as i32
+    shortest_path(&adj, &0, &(adj.len() - 1)).unwrap() as i32
 }
 
 pub fn solve_part2(input: &Input) -> i32 {
@@ -71,9 +74,12 @@ pub fn solve_part2(input: &Input) -> i32 {
         })
         .collect_vec();
 
-    let adj = adj_list(&large_map, &large_dimensions);
+    let adj = adj_list(&large_map, &large_dimensions)
+        .into_iter()
+        .enumerate()
+        .collect();
 
-    shortest_path(&adj, 0, adj.len() - 1).unwrap() as i32
+    shortest_path(&adj, &0, &(adj.len() - 1)).unwrap() as i32
 }
 
 #[cfg(test)]

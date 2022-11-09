@@ -1,17 +1,22 @@
 #![allow(unused)]
 use std::cmp::Ordering;
-use std::collections::BinaryHeap;
+use std::collections::{BinaryHeap, HashMap};
+use std::fmt::Debug;
+use std::hash::Hash;
 
 #[derive(Copy, Clone, Eq, PartialEq)]
-struct State {
-    cost: usize,
-    position: usize,
+struct State<Node> {
+    cost: i64,
+    position: Node,
 }
 
 // The priority queue depends on `Ord`.
 // Explicitly implement the trait so the queue becomes a min-heap
 // instead of a max-heap.
-impl Ord for State {
+impl<Node> Ord for State<Node>
+where
+    Node: PartialEq + Eq + Ord,
+{
     fn cmp(&self, other: &Self) -> Ordering {
         // Notice that the we flip the ordering on costs.
         // In case of a tie we compare positions - this step is necessary
@@ -24,16 +29,19 @@ impl Ord for State {
 }
 
 // `PartialOrd` needs to be implemented as well.
-impl PartialOrd for State {
+impl<Node> PartialOrd for State<Node>
+where
+    Node: PartialEq + Eq + Ord,
+{
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
 
-// Each node is represented as a `usize`, for a shorter implementation.
-pub struct Edge {
-    pub node: usize,
-    pub cost: usize,
+#[derive(Debug)]
+pub struct Edge<Node> {
+    pub node: Node,
+    pub cost: i64,
 }
 
 // Dijkstra's shortest path algorithm.
@@ -42,44 +50,60 @@ pub struct Edge {
 // to each node. This implementation isn't memory-efficient as it may leave duplicate
 // nodes in the queue. It also uses `usize::MAX` as a sentinel value,
 // for a simpler implementation.
-pub fn shortest_path(adj_list: &[Vec<Edge>], start: usize, goal: usize) -> Option<usize> {
+pub fn shortest_path<Node>(
+    adj_list: &HashMap<Node, Vec<Edge<Node>>>,
+    start: &Node,
+    goal: &Node,
+) -> Option<i64>
+where
+    Node: Ord + Hash + Clone + Debug,
+{
     // dist[node] = current shortest distance from `start` to `node`
-    let mut dist: Vec<_> = (0..adj_list.len()).map(|_| usize::MAX).collect();
+    let mut dist = HashMap::<Node, i64>::new();
 
     let mut heap = BinaryHeap::new();
 
     // We're at `start`, with a zero cost
-    dist[start] = 0;
+    dist.insert(start.clone(), 0);
     heap.push(State {
         cost: 0,
-        position: start,
+        position: start.clone(),
     });
 
     // Examine the frontier with lower cost nodes first (min-heap)
     while let Some(State { cost, position }) = heap.pop() {
         // Alternatively we could have continued to find all shortest paths
-        if position == goal {
+        if position == *goal {
             return Some(cost);
         }
 
         // Important as we may have already found a better way
-        if cost > dist[position] {
-            continue;
+        if let Some(distance) = dist.get(&position) {
+            if cost > *distance {
+                continue;
+            }
         }
 
         // For each node we can reach, see if we can find a way with
         // a lower cost going through this node
-        for edge in &adj_list[position] {
-            let next = State {
-                cost: cost + edge.cost,
-                position: edge.node,
-            };
+        if let Some(neighbors) = adj_list.get(&position) {
+            for edge in neighbors {
+                let next = State {
+                    cost: cost + edge.cost,
+                    position: edge.node.clone(),
+                };
 
-            // If so, add it to the frontier and continue
-            if next.cost < dist[next.position] {
-                heap.push(next);
-                // Relaxation, we have now found a better way
-                dist[next.position] = next.cost;
+                if let Some(distance) = dist.get_mut(&next.position) {
+                    // If so, add it to the frontier and continue
+                    if next.cost < *distance {
+                        // Relaxation, we have now found a better way
+                        *distance = next.cost;
+                        heap.push(next);
+                    }
+                } else {
+                    dist.insert(next.position.clone(), next.cost);
+                    heap.push(next);
+                }
             }
         }
     }
@@ -125,11 +149,14 @@ fn main() {
         vec![Edge { node: 0, cost: 7 }, Edge { node: 4, cost: 2 }],
         // Node 4
         vec![],
-    ];
+    ]
+    .into_iter()
+    .enumerate()
+    .collect::<HashMap<_, _>>();
 
-    assert_eq!(shortest_path(&graph, 0, 1), Some(1));
-    assert_eq!(shortest_path(&graph, 0, 3), Some(3));
-    assert_eq!(shortest_path(&graph, 3, 0), Some(7));
-    assert_eq!(shortest_path(&graph, 0, 4), Some(5));
-    assert_eq!(shortest_path(&graph, 4, 0), None);
+    assert_eq!(shortest_path(&graph, &0, &1), Some(1));
+    assert_eq!(shortest_path(&graph, &0, &3), Some(3));
+    assert_eq!(shortest_path(&graph, &3, &0), Some(7));
+    assert_eq!(shortest_path(&graph, &0, &4), Some(5));
+    assert_eq!(shortest_path(&graph, &4, &0), None);
 }
