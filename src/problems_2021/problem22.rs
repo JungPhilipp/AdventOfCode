@@ -1,7 +1,7 @@
 use std::{
-    collections::{HashSet, VecDeque},
+    collections::{HashSet},
     num::ParseIntError,
-    ops::{Range, RangeInclusive},
+    ops::{Range},
 };
 
 use array_tool::vec::Intersect;

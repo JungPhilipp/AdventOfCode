@@ -1,14 +1,12 @@
-use crate::util::index::*;
-use array_tool::vec::Intersect;
+
+
 use itertools::Itertools;
 use log::{debug, info};
 use ndarray::Array2;
 
 use std::{
-    collections::{HashMap, HashSet, VecDeque},
+    collections::{HashMap, HashSet},
     fmt,
-    num::ParseIntError,
-    ops::{Range, RangeInclusive},
 };
 
 macro_rules! INPUT_PATH {
@@ -195,13 +193,13 @@ pub fn solve_part1(input: Input) -> i64 {
     walk(input, 0, &end);
     0
 }
-pub fn solve_part2(input: Input) -> i64 {
+pub fn solve_part2(_input: Input) -> i64 {
     0
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    
     use test_log::test;
 
     #[test]
