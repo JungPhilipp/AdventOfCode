@@ -85,7 +85,7 @@ pub fn solve_part2(input: &Input) -> i32 {
         }
         let row = &mut image[y];
         if x >= row.len() {
-            row.resize(x as usize + 1, ".")
+            row.resize(x + 1, ".")
         }
         image[y][x] = "#"
     }

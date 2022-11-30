@@ -27,7 +27,7 @@ pub fn parse(input: &str) -> Input {
         .chars()
         .filter_map(|b| match b {
             w if w.is_whitespace() => None,
-            d if d.is_digit(16) => {
+            d if d.is_ascii_hexdigit() => {
                 let digit = d.to_digit(16).unwrap();
                 Some((0..4).rev().map(move |i| (digit & (1 << i)) != 0))
             }

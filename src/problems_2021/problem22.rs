@@ -1,8 +1,4 @@
-use std::{
-    collections::{HashSet},
-    num::ParseIntError,
-    ops::{Range},
-};
+use std::{collections::HashSet, num::ParseIntError, ops::Range};
 
 use itertools::Itertools;
 use log::{debug, info};
@@ -27,8 +23,8 @@ type MyRange = Range<i32>;
 type Input = Vec<(bool, MyRange, MyRange, MyRange)>;
 
 fn next_number(iter: &mut dyn Iterator<Item = char>) -> Result<i32, ParseIntError> {
-    iter.skip_while(|c| !c.is_digit(10) && *c != '-')
-        .take_while(|c| c.is_digit(10) || *c == '-')
+    iter.skip_while(|c| !c.is_ascii_digit() && *c != '-')
+        .take_while(|c| c.is_ascii_digit() || *c == '-')
         .collect::<String>()
         .parse::<i32>()
 }

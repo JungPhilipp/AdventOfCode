@@ -237,7 +237,7 @@ pub fn solve_part2(input: &Input) -> (Number, Number) {
 
 #[cfg(test)]
 mod tests {
-    
+
     use test_log::test;
     #[test]
     fn part12() {

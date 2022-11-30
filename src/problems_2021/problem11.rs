@@ -1,7 +1,7 @@
 #![allow(clippy::ptr_arg)]
 
 use itertools::Itertools;
-use log::{debug};
+use log::debug;
 
 use crate::util::parse::read_lines;
 

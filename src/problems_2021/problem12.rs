@@ -13,7 +13,7 @@ type Input = HashMap<Edge, HashSet<Edge>>;
 pub fn parse_input(path_to_input: &str) -> Input {
     let input = read_lines(path_to_input)
         .iter()
-        .map(|line| {
+        .flat_map(|line| {
             let connection: (String, String) = line
                 .split('-')
                 .map(|s| s.to_string())
@@ -21,7 +21,6 @@ pub fn parse_input(path_to_input: &str) -> Input {
                 .unwrap();
             [connection.clone(), (connection.1, connection.0)]
         })
-        .flatten()
         .collect_vec();
 
     let mut adjacency_list = HashMap::<Edge, HashSet<Edge>>::new();

@@ -8,7 +8,7 @@ pub fn parse_input(path_to_input: &str) -> Vec<i32> {
 pub fn solve_part1(input: &[i32]) -> i32 {
     input
         .windows(2)
-        .map(|pair| if pair[0] < pair[1] { 1 } else { 0 })
+        .map(|pair| i32::from(pair[0] < pair[1]))
         .sum()
 }
 
@@ -18,7 +18,7 @@ pub fn solve_part2(input: &[i32]) -> i32 {
         .map(|window| window.iter().sum())
         .collect::<Vec<i32>>()
         .windows(2)
-        .map(|pair| if pair[0] < pair[1] { 1 } else { 0 })
+        .map(|pair| i32::from(pair[0] < pair[1]))
         .sum()
 }
 

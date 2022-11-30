@@ -38,7 +38,7 @@ fn adj_list(grid: &[i32], dimensions: &(usize, usize)) -> Vec<Vec<Edge<usize>>> 
                 .iter()
                 .filter_map(|pos| {
                     flatten(*pos, dimensions).map(|flat_index| Edge {
-                        node: flat_index as usize,
+                        node: flat_index,
                         cost: *risk as i64,
                     })
                 })
@@ -68,7 +68,7 @@ pub fn solve_part2(input: &Input) -> i32 {
             let y_tile = y_large / dimensions.1 as i32;
             let x = x_large % dimensions.0 as i32;
             let y = y_large % dimensions.1 as i32;
-            let risk = risk_map[flatten((x, y), dimensions).unwrap() as usize];
+            let risk = risk_map[flatten((x, y), dimensions).unwrap()];
             let new_risk = risk + x_tile + y_tile;
             (new_risk - 1) % 9 + 1
         })

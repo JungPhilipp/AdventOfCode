@@ -10,7 +10,7 @@ pub fn parse_input(path_to_input: &str) -> Vec<i64> {
 
 pub fn sliding_sum(input: &[i64], window_size: usize) -> i64 {
     for window in input.windows(window_size + 1) {
-        let pairs = two_sum(&window[0..window_size].to_vec(), window.last().unwrap());
+        let pairs = two_sum(&window[0..window_size], window.last().unwrap());
         if pairs.is_empty() {
             return *window.last().unwrap();
         }

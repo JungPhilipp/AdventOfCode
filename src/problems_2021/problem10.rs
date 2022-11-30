@@ -97,7 +97,7 @@ fn find_errors(line: &Line) -> Option<Bracket> {
 pub fn solve_part1(input: &Input) -> i32 {
     input
         .iter()
-        .map(|line| find_errors(line).map_or(0, |bracket| bracket_error_score(&bracket) as i32))
+        .map(|line| find_errors(line).map_or(0, |bracket| bracket_error_score(&bracket)))
         .sum()
 }
 fn autocomplete(line: &Line) -> Vec<Bracket> {

@@ -84,10 +84,7 @@ pub fn solve_part1(input: &Input) -> i32 {
         }
         add_line(&mut board, line);
     }
-    board
-        .into_iter()
-        .map(|(_, count)| if count >= 2 { 1 } else { 0 })
-        .sum()
+    board.into_values().map(|count| i32::from(count >= 2)).sum()
 }
 
 pub fn solve_part2(input: &Input) -> i32 {
@@ -95,10 +92,7 @@ pub fn solve_part2(input: &Input) -> i32 {
     for line in input {
         add_line(&mut board, line);
     }
-    board
-        .into_iter()
-        .map(|(_, count)| if count >= 2 { 1 } else { 0 })
-        .sum()
+    board.into_values().map(|count| i32::from(count >= 2)).sum()
 }
 
 #[cfg(test)]

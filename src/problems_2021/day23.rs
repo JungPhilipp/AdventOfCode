@@ -1,5 +1,3 @@
-
-
 use itertools::Itertools;
 use log::{debug, info};
 use ndarray::Array2;
@@ -78,7 +76,7 @@ fn parse(input: &str) -> Input {
         (5, 13),
         input
             .lines()
-            .map(|line| {
+            .flat_map(|line| {
                 line.chars()
                     .map(|c| match c {
                         '#' => Field::Wall,
@@ -88,7 +86,6 @@ fn parse(input: &str) -> Input {
                     })
                     .collect_vec()
             })
-            .flatten()
             .collect_vec(),
     )
     .unwrap()

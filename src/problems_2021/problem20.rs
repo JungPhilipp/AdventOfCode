@@ -44,7 +44,7 @@ pub fn parse(input: &str) -> Input {
         .skip(1)
         .map(|line| line.trim())
         .enumerate()
-        .map(|(row, line)| {
+        .flat_map(|(row, line)| {
             line.chars()
                 .enumerate()
                 .filter_map(|(column, c)| match c {
@@ -54,7 +54,6 @@ pub fn parse(input: &str) -> Input {
                 })
                 .collect_vec()
         })
-        .flatten()
         .collect();
     (
         lookup,

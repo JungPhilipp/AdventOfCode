@@ -8,7 +8,7 @@ pub fn parse_input(path_to_input: &str) -> Vec<Vec<String>> {
         .unwrap()
         .split("\n\n")
         .map(|s| {
-            s.replace("\n", " ")
+            s.replace('\n', " ")
                 .split(' ')
                 .map(|s| s.chars().sorted().collect::<String>())
                 .filter(|s| !s.is_empty())

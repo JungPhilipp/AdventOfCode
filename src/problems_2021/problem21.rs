@@ -41,7 +41,7 @@ impl DeterministicDie {
     fn roll(&mut self) -> u64 {
         let result = self.value;
         self.value += 1;
-        self.value = (self.value - 1 % 100) + 1;
+        self.value = ((self.value - 1) % 100) + 1;
         result
     }
 }

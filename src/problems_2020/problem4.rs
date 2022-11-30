@@ -10,7 +10,7 @@ pub fn parse_input(path_to_input: &str) -> Vec<HashMap<String, String>> {
         .unwrap()
         .split("\n\n")
         .map(|s| {
-            s.replace("\n", " ")
+            s.replace('\n', " ")
                 .split(' ')
                 .filter_map(|kv| {
                     kv.split(':')

@@ -66,7 +66,7 @@ fn basin_size(height_map: &[i32], index_low_point: i32, line_width: i32) -> i32 
         }
         for neighbor in neighbors {
             if neighbor >= 0 && neighbor < height_map.len() as i32 {
-                candidates.push(neighbor as i32)
+                candidates.push(neighbor)
             }
         }
     }
