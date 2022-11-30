@@ -78,6 +78,6 @@ pub fn solve() {
     problem20::solve();
     problem21::solve();
     problem22::solve();
-    day23::solve();
+    //day23::solve();
     day24::solve();
 }
