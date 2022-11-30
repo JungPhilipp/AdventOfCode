@@ -15,6 +15,7 @@ macro_rules! INPUT_PATH {
     };
 }
 
+#[allow(unused)]
 pub fn solve() {
     let input = include_str!(INPUT_PATH!());
     let parsed = parse(input);
@@ -199,7 +200,7 @@ pub fn solve_part2(_input: Input) -> i64 {
 
 #[cfg(test)]
 mod tests {
-    
+
     use test_log::test;
 
     #[test]
