@@ -1,3 +1,5 @@
+use std::collections::BinaryHeap;
+
 use itertools::Itertools;
 use log::info;
 
@@ -41,7 +43,13 @@ fn solve_part1(input: Input) -> usize {
 }
 
 fn solve_part2(input: Input) -> usize {
-    input.iter().map(|elf| elf.iter().sum::<usize>()).sorted().rev().take(3).sum()
+    input
+        .iter()
+        .map(|elf| elf.iter().sum::<usize>())
+        .collect::<BinaryHeap<usize>>()
+        .into_iter_sorted()
+        .take(3)
+        .sum()
 }
 
 #[cfg(test)]

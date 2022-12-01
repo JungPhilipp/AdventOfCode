@@ -1,4 +1,5 @@
 #![feature(step_trait)]
+#![feature(binary_heap_into_iter_sorted)]
 
 mod playground;
 mod problems_2020;
