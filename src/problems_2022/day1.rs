@@ -41,7 +41,7 @@ fn solve_part1(input: Input) -> usize {
 }
 
 fn solve_part2(input: Input) -> usize {
-    0
+    input.iter().map(|elf| elf.iter().sum::<usize>()).sorted().rev().take(3).sum()
 }
 
 #[cfg(test)]
@@ -59,6 +59,19 @@ mod tests {
 
     #[test]
     fn part1() {
-        assert_eq!(solve_part1(parse(include_str!(INPUT_PATH!()))), 0);
+        assert_eq!(solve_part1(parse(include_str!(INPUT_PATH!()))), 71934);
+    }
+
+    #[test]
+    fn test_example_2() {
+        assert_eq!(
+            45000,
+            solve_part2(parse(include_str!("day1/example_1.txt")))
+        );
+    }
+
+    #[test]
+    fn part2() {
+        assert_eq!(solve_part2(parse(include_str!(INPUT_PATH!()))), 211447);
     }
 }
