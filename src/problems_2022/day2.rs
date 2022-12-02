@@ -31,7 +31,7 @@ enum Game {
     Won = 6,
 }
 
-type Input = Vec<(Symbol, Symbol)>;
+type Input = Vec<(char, char)>;
 
 fn parse(input: &str) -> Input {
     input
@@ -41,12 +41,7 @@ fn parse(input: &str) -> Input {
                 None
             } else {
                 line.split(' ')
-                    .map(|sign| match sign.trim().chars().next().unwrap() {
-                        'A' | 'X' => Symbol::Rock,
-                        'B' | 'Y' => Symbol::Paper,
-                        'C' | 'Z' => Symbol::Scissors,
-                        invalid => panic!("{} not a valid symbol", invalid),
-                    })
+                    .map(|sign| sign.trim().chars().next().unwrap())
                     .collect_tuple()
             }
         })
@@ -54,29 +49,72 @@ fn parse(input: &str) -> Input {
 }
 
 fn determine_points(elf: Symbol, me: Symbol) -> usize {
+    use Game::*;
+    use Symbol::*;
     let outcome = match (elf, me) {
-        (Symbol::Rock, Symbol::Rock) => Game::Tie,
-        (Symbol::Rock, Symbol::Paper) => Game::Won,
-        (Symbol::Rock, Symbol::Scissors) => Game::Lost,
-        (Symbol::Paper, Symbol::Rock) => Game::Lost,
-        (Symbol::Paper, Symbol::Paper) => Game::Tie,
-        (Symbol::Paper, Symbol::Scissors) => Game::Won,
-        (Symbol::Scissors, Symbol::Rock) => Game::Won,
-        (Symbol::Scissors, Symbol::Paper) => Game::Lost,
-        (Symbol::Scissors, Symbol::Scissors) => Game::Tie,
+        (Rock, Rock) => Tie,
+        (Rock, Paper) => Won,
+        (Rock, Scissors) => Lost,
+        (Paper, Rock) => Lost,
+        (Paper, Paper) => Tie,
+        (Paper, Scissors) => Won,
+        (Scissors, Rock) => Won,
+        (Scissors, Paper) => Lost,
+        (Scissors, Scissors) => Tie,
     };
     outcome as usize + me as usize
+}
+fn char_to_symbol(c: char) -> Symbol {
+    match c {
+        'A' | 'X' => Symbol::Rock,
+        'B' | 'Y' => Symbol::Paper,
+        'C' | 'Z' => Symbol::Scissors,
+        invalid => panic!("{} not a valid symbol", invalid),
+    }
 }
 
 fn solve_part1(input: Input) -> usize {
     input
         .into_iter()
+        .map(|(elf, me)| (char_to_symbol(elf), char_to_symbol(me)))
         .map(|(elf, me)| determine_points(elf, me))
         .sum()
 }
 
+fn char_to_game(c: char) -> Game {
+    match c {
+        'X' => Game::Lost,
+        'Y' => Game::Tie,
+        'Z' => Game::Won,
+        invalid => panic!("{} not a valid game", invalid),
+    }
+}
+
+fn choose_symbol(elf_symbol: Symbol, outcome: Game) -> Symbol {
+    use Game::*;
+    use Symbol::*;
+    match (elf_symbol, outcome) {
+        (Rock, Tie) => Rock,
+        (Rock, Won) => Paper,
+        (Rock, Lost) => Scissors,
+        (Paper, Lost) => Rock,
+        (Paper, Tie) => Paper,
+        (Paper, Won) => Scissors,
+        (Scissors, Won) => Rock,
+        (Scissors, Lost) => Paper,
+        (Scissors, Tie) => Scissors,
+    }
+}
+
 fn solve_part2(input: Input) -> usize {
-    0
+    input
+        .into_iter()
+        .map(|(elf, outcome)| {
+            let elf_symbol = char_to_symbol(elf);
+            (elf_symbol, choose_symbol(elf_symbol, char_to_game(outcome)))
+        })
+        .map(|(elf, me)| determine_points(elf, me))
+        .sum()
 }
 
 #[cfg(test)]
@@ -91,7 +129,12 @@ mod tests {
 
     #[test]
     fn part1() {
-        assert_eq!(solve_part1(parse(include_str!(INPUT_PATH!()))), 0);
+        assert_eq!(solve_part1(parse(include_str!(INPUT_PATH!()))), 13682);
+    }
+
+    #[test]
+    fn example_1_2() {
+        assert_eq!(solve_part2(parse(include_str!("day2/example_1.txt"))), 12);
     }
 
     #[test]
