@@ -24,11 +24,33 @@ enum Symbol {
     Scissors = 3,
 }
 
+impl Symbol {
+    fn from(c: char) -> Symbol {
+        match c {
+            'A' | 'X' => Symbol::Rock,
+            'B' | 'Y' => Symbol::Paper,
+            'C' | 'Z' => Symbol::Scissors,
+            invalid => panic!("{} not a valid symbol", invalid),
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug)]
 enum Game {
     Lost = 0,
     Tie = 3,
     Won = 6,
+}
+
+impl Game {
+    fn from(c: char) -> Game {
+        match c {
+            'X' => Game::Lost,
+            'Y' => Game::Tie,
+            'Z' => Game::Won,
+            invalid => panic!("{} not a valid game", invalid),
+        }
+    }
 }
 
 type Input = Vec<(char, char)>;
@@ -64,30 +86,13 @@ fn determine_points(elf: Symbol, me: Symbol) -> usize {
     };
     outcome as usize + me as usize
 }
-fn char_to_symbol(c: char) -> Symbol {
-    match c {
-        'A' | 'X' => Symbol::Rock,
-        'B' | 'Y' => Symbol::Paper,
-        'C' | 'Z' => Symbol::Scissors,
-        invalid => panic!("{} not a valid symbol", invalid),
-    }
-}
 
 fn solve_part1(input: Input) -> usize {
     input
         .into_iter()
-        .map(|(elf, me)| (char_to_symbol(elf), char_to_symbol(me)))
+        .map(|(elf, me)| (Symbol::from(elf), Symbol::from(me)))
         .map(|(elf, me)| determine_points(elf, me))
         .sum()
-}
-
-fn char_to_game(c: char) -> Game {
-    match c {
-        'X' => Game::Lost,
-        'Y' => Game::Tie,
-        'Z' => Game::Won,
-        invalid => panic!("{} not a valid game", invalid),
-    }
 }
 
 fn choose_symbol(elf_symbol: Symbol, outcome: Game) -> Symbol {
@@ -110,8 +115,8 @@ fn solve_part2(input: Input) -> usize {
     input
         .into_iter()
         .map(|(elf, outcome)| {
-            let elf_symbol = char_to_symbol(elf);
-            (elf_symbol, choose_symbol(elf_symbol, char_to_game(outcome)))
+            let elf_symbol = Symbol::from(elf);
+            (elf_symbol, choose_symbol(elf_symbol, Game::from(outcome)))
         })
         .map(|(elf, me)| determine_points(elf, me))
         .sum()
@@ -139,6 +144,6 @@ mod tests {
 
     #[test]
     fn part2() {
-        assert_eq!(solve_part2(parse(include_str!(INPUT_PATH!()))), 0);
+        assert_eq!(solve_part2(parse(include_str!(INPUT_PATH!()))), 12881);
     }
 }
