@@ -59,7 +59,19 @@ fn solve_part1(input: Input) -> usize {
 }
 
 fn solve_part2(input: Input) -> usize {
-    0
+    input
+        .into_iter()
+        .map(|rucksack| rucksack.into_iter().collect::<HashSet<usize>>())
+        .chunks(3)
+        .into_iter()
+        .map(|group| {
+            group
+                .reduce(|acc, e| acc.intersection(&e).cloned().collect())
+                .unwrap()
+                .drain()
+                .sum::<usize>()
+        })
+        .sum()
 }
 
 #[cfg(test)]
@@ -78,7 +90,12 @@ mod tests {
     }
 
     #[test]
+    fn example_1_2() {
+        assert_eq!(solve_part2(parse(include_str!("day3/example_1.txt"))), 70);
+    }
+
+    #[test]
     fn part2() {
-        assert_eq!(solve_part2(parse(include_str!(INPUT_PATH!()))), 0);
+        assert_eq!(solve_part2(parse(include_str!(INPUT_PATH!()))), 2567);
     }
 }
