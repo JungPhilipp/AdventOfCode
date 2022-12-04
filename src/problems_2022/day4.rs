@@ -53,7 +53,10 @@ fn solve_part1(input: Input) -> usize {
 }
 
 fn solve_part2(input: Input) -> usize {
-    0
+    input
+        .into_iter()
+        .filter(|(first, second)| !(first.1 < second.0 || second.1 < first.0))
+        .count()
 }
 
 #[cfg(test)]
@@ -73,11 +76,11 @@ mod tests {
 
     #[test]
     fn example_1_2() {
-        assert_eq!(solve_part2(parse(include_str!("day4/example_1.txt"))), 0);
+        assert_eq!(solve_part2(parse(include_str!("day4/example_1.txt"))), 4);
     }
 
     #[test]
     fn part2() {
-        assert_eq!(solve_part2(parse(include_str!(INPUT_PATH!()))), 0);
+        assert_eq!(solve_part2(parse(include_str!(INPUT_PATH!()))), 830);
     }
 }
