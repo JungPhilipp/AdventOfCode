@@ -1,6 +1,3 @@
-use std::collections::HashSet;
-
-use array_tool::vec::Intersect;
 use itertools::Itertools;
 use log::info;
 
