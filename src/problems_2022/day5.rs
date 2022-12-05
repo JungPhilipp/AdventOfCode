@@ -17,7 +17,8 @@ pub fn solve() {
     );
 }
 type Board = Vec<Vec<char>>;
-type Moves = Vec<(usize, usize)>;
+type Move = (usize, usize, usize);
+type Moves = Vec<Move>;
 type Input = (Board, Moves);
 
 fn parse(input: &str) -> Input {
@@ -51,14 +52,13 @@ fn parse(input: &str) -> Input {
         moves_input
             .split('\n')
             .filter(|line| !line.is_empty())
-            .flat_map(|line| {
-                let (rep, from, to) = line
-                    .split(' ')
+            .map(|line| {
+                line.split(' ')
                     .filter_map(|s| s.parse::<usize>().ok())
-                    .collect_tuple()
-                    .expect("Expected three numbers");
-                std::iter::repeat((from - 1, to - 1)).take(rep)
+                    .collect_tuple::<Move>()
+                    .expect("Expected three numbers")
             })
+            .map(|(rep, from, to)| (rep, from - 1, to - 1))
             .collect_vec()
     };
 
@@ -67,9 +67,10 @@ fn parse(input: &str) -> Input {
 
 fn solve_part1(input: Input) -> String {
     let (mut board, moves) = input;
-    for (from, to) in moves {
-        let cargo = board[from].pop().expect("Stack should not be empty");
-        board[to].push(cargo);
+    for (rep, from, to) in moves {
+        let new_len = board[from].len() - rep;
+        let cargo = board[from].split_off(new_len);
+        board[to].extend(cargo.into_iter().rev());
     }
     board
         .into_iter()
@@ -77,8 +78,17 @@ fn solve_part1(input: Input) -> String {
         .collect::<String>()
 }
 
-fn solve_part2(input: Input) -> usize {
-    0
+fn solve_part2(input: Input) -> String {
+    let (mut board, moves) = input;
+    for (rep, from, to) in moves {
+        let new_len = board[from].len() - rep;
+        let cargo = board[from].split_off(new_len);
+        board[to].extend(cargo);
+    }
+    board
+        .into_iter()
+        .filter_map(|mut stack| stack.pop())
+        .collect::<String>()
 }
 
 #[cfg(test)]
@@ -101,11 +111,14 @@ mod tests {
 
     #[test]
     fn example_1_2() {
-        assert_eq!(solve_part2(parse(include_str!("day5/example_1.txt"))), 0);
+        assert_eq!(
+            solve_part2(parse(include_str!("day5/example_1.txt"))),
+            "MCD"
+        );
     }
 
     #[test]
     fn part2() {
-        assert_eq!(solve_part2(parse(include_str!(INPUT_PATH!()))), 0);
+        assert_eq!(solve_part2(parse(include_str!(INPUT_PATH!()))), "");
     }
 }
