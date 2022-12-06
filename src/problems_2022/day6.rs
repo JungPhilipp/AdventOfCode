@@ -9,12 +9,6 @@ macro_rules! INPUT_PATH {
     };
 }
 
-macro_rules! EXAMPLE_1_PATH {
-    () => {
-        "day6/example_1.txt"
-    };
-}
-
 pub fn solve() {
     let input = include_str!(INPUT_PATH!());
     let parsed = parse(input);
