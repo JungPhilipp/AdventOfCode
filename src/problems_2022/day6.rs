@@ -31,12 +31,12 @@ fn parse(input: &str) -> Input {
     input.trim().chars().collect_vec()
 }
 
-fn solve_part1(input: Input) -> usize {
+fn first_unique_sequence(input: Input, length: usize) -> usize {
     *input
         .into_iter()
         .enumerate()
         .collect_vec()
-        .windows(4)
+        .windows(length)
         .find(|window| {
             window
                 .iter()
@@ -44,17 +44,22 @@ fn solve_part1(input: Input) -> usize {
                 .cloned()
                 .collect::<HashSet<char>>()
                 .len()
-                == 4
+                == length
         })
         .expect("Expected to find at least one")
         .iter()
         .map(|(index, _)| index)
         .max()
-        .expect("Expected to find a max index") + 1
+        .expect("Expected to find a max index")
+        + 1
+}
+
+fn solve_part1(input: Input) -> usize {
+    first_unique_sequence(input, 4)
 }
 
 fn solve_part2(input: Input) -> usize {
-    0
+    first_unique_sequence(input, 14)
 }
 
 #[cfg(test)]
@@ -93,12 +98,7 @@ mod tests {
     }
 
     #[test]
-    fn example_1_2() {
-        assert_eq!(solve_part2(parse(include_str!(EXAMPLE_1_PATH!()))), 0);
-    }
-
-    #[test]
     fn part2() {
-        assert_eq!(solve_part2(parse(include_str!(INPUT_PATH!()))), 0);
+        assert_eq!(solve_part2(parse(include_str!(INPUT_PATH!()))), 3298);
     }
 }
