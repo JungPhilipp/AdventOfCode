@@ -13,6 +13,5 @@ test-log = "*"
 num = "*"
 itertools = "*"
 regex = "*"
-array_tool = "*"
 ndarray = "*"
 
