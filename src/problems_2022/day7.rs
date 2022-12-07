@@ -169,7 +169,6 @@ fn build_tree(input: Input) -> Rc<RefCell<Node>> {
                 for item in content.into_iter() {
                     match item.clone() {
                         Item::Dir(_) => {
-                            info!("Create dir {:?}", item);
                             let new_node = Rc::new(RefCell::new(Node::new(
                                 item,
                                 Some(Rc::downgrade(&current_dir)),
@@ -178,7 +177,6 @@ fn build_tree(input: Input) -> Rc<RefCell<Node>> {
                         }
                         Item::File((_, name)) => {
                             if current_dir.borrow().get_child(&name).is_none() {
-                                info!("Create File {:?}", item);
                                 let new_node = Rc::new(RefCell::new(Node::new(
                                     item,
                                     Some(Rc::downgrade(&current_dir)),
@@ -196,9 +194,7 @@ fn build_tree(input: Input) -> Rc<RefCell<Node>> {
 }
 
 fn solve_part1(input: Input) -> usize {
-    info!("{:?}", input);
     let tree = build_tree(input);
-    info!("{:?}", tree);
     let mut queue: Vec<Rc<RefCell<Node>>> = vec![tree];
     let mut sum = 0;
     while let Some(dir) = queue.pop() {
@@ -217,7 +213,37 @@ fn solve_part1(input: Input) -> usize {
 }
 
 fn solve_part2(input: Input) -> usize {
-    0
+    let tree = build_tree(input);
+    let mut queue: Vec<Rc<RefCell<Node>>> = vec![tree];
+    let mut dirs = vec![];
+    while let Some(dir) = queue.pop() {
+        dirs.push(dir.clone());
+        for child in dir.borrow().children.iter() {
+            if child.borrow().item.is_dir() {
+                queue.push(child.clone());
+            }
+        }
+    }
+
+    let total_size = 70000000;
+    let needed_size = 30000000;
+    let current_size: usize = dirs
+        .iter()
+        .find(|dir| dir.borrow().item.get_name() == "/")
+        .expect("Root to exist")
+        .borrow()
+        .item
+        .get_size();
+    let free = total_size - current_size;
+    let missing = needed_size - free;
+    dirs.into_iter()
+        .filter_map(|dir| match dir.borrow().item.get_size() {
+            x if x < missing => None,
+            x if x >= missing => Some(x),
+            _ => unreachable!()
+        })
+        .min()
+        .expect("One dir to be larger than the missing space")
 }
 
 #[cfg(test)]
@@ -240,6 +266,6 @@ mod tests {
 
     #[test]
     fn part2() {
-        //assert_eq!(solve_part2(parse(include_str!(INPUT_PATH!()))), 0);
+        assert_eq!(solve_part2(parse(include_str!(INPUT_PATH!()))), 0);
     }
 }
