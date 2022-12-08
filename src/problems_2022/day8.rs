@@ -1,8 +1,8 @@
-use std::collections::HashSet;
+
 
 use itertools::Itertools;
 use log::info;
-use ndarray::{iter::IterMut, Array, Array2, Axis};
+use ndarray::{Array, Array2, Axis};
 
 macro_rules! INPUT_PATH {
     () => {
@@ -103,9 +103,6 @@ fn solve_part2(forest: Input) -> usize {
             );
         }
     }
-    //let flat_forest = forest.iter().flatten().collect_vec();
-    //dbg!(Array2::from_shape_vec((i_max, j_max), flat_forest.clone()).expect("regular matrix"));
-    //dbg!(Array2::from_shape_vec((i_max, j_max), scores.clone()).expect("regular matrix"));
     scores.into_iter().max().expect("To find a spot")
 }
 
