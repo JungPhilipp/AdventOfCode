@@ -70,6 +70,13 @@ fn solve_part1(input: Input) -> usize {
     flags.iter().filter(|&&visible| (visible > 0)).count()
 }
 
+fn count_visible_trees(house_height: i32, trees: &[i32]) -> usize {
+    trees
+        .iter()
+        .position(|tree| tree >= &house_height)
+        .map_or(trees.len(), |pos| pos + 1)
+}
+
 fn solve_part2(forest: Input) -> usize {
     let mut scores = vec![];
     let i_max = forest.len();
@@ -77,73 +84,28 @@ fn solve_part2(forest: Input) -> usize {
     for i in 0..i_max {
         for j in 0..j_max {
             let house_height = forest[i][j];
-
-            let mut flag = true;
-            let i_back = for tree in (0..i).rev(){}
-                .filter(|&tree| {
-                    let tree_height = forest[tree][j];
-                    if tree_height >= house_height {
-                        flag = false;
-
-                    } else {
-                        false
-                    }
-                })
-                .count();
-            let mut max = -1;
-            let j_back = (0..j)
-                .rev()
-                .filter(|&tree| {
-                    let tree_height = forest[i][tree];
-                    if tree_height >= max {
-                        max = tree_height;
-                        if max >= house_height {
-                            max = 10;
-                        }
-                        true
-                    } else {
-                        false
-                    }
-                })
-                .count();
-            let mut max = -1;
+            let i_back = (0..i).rev().map(|index| forest[index][j]).collect_vec();
+            let j_back = (0..j).rev().map(|index| forest[i][index]).collect_vec();
             let i_forward = (i..i_max)
                 .skip(1)
-                .filter(|&tree| {
-                    let tree_height = forest[tree][j];
-                    if tree_height >= max {
-                        max = tree_height;
-                        if max >= house_height {
-                            max = 10;
-                        }
-                        true
-                    } else {
-                        false
-                    }
-                })
-                .count();
-            let mut max = -1;
+                .map(|index| forest[index][j])
+                .collect_vec();
             let j_forward = (j..j_max)
                 .skip(1)
-                .filter(|&tree| {
-                    let tree_height = forest[i][tree];
-                    if tree_height >= max {
-                        max = tree_height;
-                        if max >= house_height {
-                            max = 10;
-                        }
-                        true
-                    } else {
-                        false
-                    }
-                })
-                .count();
-            scores.push(i_back * i_forward * j_back * j_forward);
+                .map(|index| forest[i][index])
+                .collect_vec();
+
+            scores.push(
+                count_visible_trees(house_height, &i_back)
+                    * count_visible_trees(house_height, &j_back)
+                    * count_visible_trees(house_height, &i_forward)
+                    * count_visible_trees(house_height, &j_forward),
+            );
         }
     }
-    let flat_forest = forest.iter().flatten().collect_vec();
-    dbg!(Array2::from_shape_vec((i_max, j_max), flat_forest.clone()).expect("regular matrix"));
-    dbg!(Array2::from_shape_vec((i_max, j_max), scores.clone()).expect("regular matrix"));
+    //let flat_forest = forest.iter().flatten().collect_vec();
+    //dbg!(Array2::from_shape_vec((i_max, j_max), flat_forest.clone()).expect("regular matrix"));
+    //dbg!(Array2::from_shape_vec((i_max, j_max), scores.clone()).expect("regular matrix"));
     scores.into_iter().max().expect("To find a spot")
 }
 
@@ -151,6 +113,19 @@ fn solve_part2(forest: Input) -> usize {
 mod tests {
     use super::*;
     use test_log::test;
+
+    #[test]
+    fn visible_trees_1() {
+        assert_eq!(count_visible_trees(5, &[3]), 1);
+        assert_eq!(count_visible_trees(5, &[5, 2]), 1);
+        assert_eq!(count_visible_trees(5, &[1, 2]), 2);
+        assert_eq!(count_visible_trees(5, &[3, 5, 3]), 2);
+
+        assert_eq!(count_visible_trees(5, &[3, 3]), 2);
+        assert_eq!(count_visible_trees(5, &[4, 9]), 2);
+
+        assert_eq!(count_visible_trees(5, &[1, 4, 3, 5, 1, 1, 1, 5, 2, 9]), 4);
+    }
 
     #[test]
     fn example_1() {
@@ -169,6 +144,6 @@ mod tests {
 
     #[test]
     fn part2() {
-        //assert_eq!(solve_part2(parse(include_str!(INPUT_PATH!()))), 0);
+        assert_eq!(solve_part2(parse(include_str!(INPUT_PATH!()))), 0);
     }
 }
