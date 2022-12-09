@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use itertools::Itertools;
 use log::info;
 use ndarray::{Array, Array2, Axis};
@@ -24,14 +26,101 @@ pub fn solve() {
     );
 }
 
-type Input = Vec<Vec<i32>>;
+#[derive(Debug, Copy, Clone)]
+enum Direction {
+    Right,
+    Left,
+    Up,
+    Down,
+}
+
+type Input = Vec<(Direction, i32)>;
 
 fn parse(input: &str) -> Input {
-    vec![]
+    input
+        .split('\n')
+        .filter(|line| !line.is_empty())
+        .map(|line| {
+            let (s_dir, s_steps) = line.split_whitespace().collect_tuple().expect("Two Parts");
+            let direction = match s_dir {
+                "R" => Direction::Right,
+                "L" => Direction::Left,
+                "U" => Direction::Up,
+                "D" => Direction::Down,
+                unmatched => panic!("Unknown direction {} ", unmatched),
+            };
+            let steps = s_steps.parse::<i32>().expect("a number");
+            (direction, steps)
+        })
+        .collect_vec()
+}
+
+#[derive(Debug, Clone, Hash, PartialEq, Eq)]
+struct Point {
+    x: i32,
+    y: i32,
+}
+
+impl Point {
+    fn new(x: i32, y: i32) -> Point {
+        Point { x, y }
+    }
+
+    fn distance(&self, other: &Point) -> (i32, i32) {
+        (self.x - other.x, self.y - other.y)
+    }
+
+    fn in_range(&self, other: &Point) -> bool {
+        let (x_dist, y_dist) = self.distance(other);
+        x_dist.abs() <= 1 && y_dist.abs() <= 1
+    }
+
+    fn step(&mut self, dir: Direction) {
+        use Direction::*;
+        match dir {
+            Right => self.x += 1,
+            Left => self.x -= 1,
+            Up => self.y += 1,
+            Down => self.y -= 1,
+        }
+    }
+
+    fn catchup(&mut self, other: &Point) {
+        if other.in_range(self) {
+            return;
+        }
+
+        let (x_dist, y_dist) = other.distance(self);
+        self.x += x_dist.signum();
+        self.y += y_dist.signum();
+
+        other.assert_in_range(self);
+    }
+
+    fn assert_in_range(&self, other: &Point) {
+        assert!(self.in_range(other), "{:?}, {:?}", self, other);
+    }
+}
+
+fn do_step(head: &mut Point, tail: &mut Point, dir: Direction, steps: i32) -> Vec<Point> {
+    head.assert_in_range(tail);
+    (0..steps)
+        .map(|_| {
+            head.step(dir);
+            tail.catchup(head);
+            tail.clone()
+        })
+        .collect()
 }
 
 fn solve_part1(input: Input) -> usize {
-    0
+    let mut head = Point::new(0, 0);
+    let mut tail = Point::new(0, 0);
+    input
+        .into_iter()
+        .flat_map(|(direction, steps)| do_step(&mut head, &mut tail, direction, steps))
+        .collect::<HashSet<Point>>()
+        .len()
 }
 
 fn solve_part2(forest: Input) -> usize {
@@ -45,12 +134,12 @@ mod tests {
 
     #[test]
     fn example_1() {
-        assert_eq!(solve_part1(parse(include_str!(EXAMPLE_PATH!()))), 0);
+        assert_eq!(solve_part1(parse(include_str!(EXAMPLE_PATH!()))), 13);
     }
 
     #[test]
     fn part1() {
-        assert_eq!(solve_part1(parse(include_str!(INPUT_PATH!()))), 0);
+        assert_eq!(solve_part1(parse(include_str!(INPUT_PATH!()))), 6057);
     }
 
     #[test]
