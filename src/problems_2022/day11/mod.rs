@@ -140,7 +140,9 @@ fn solve_part1(mut input: Input) -> usize {
             let monkey = input[monkey_index].clone();
             for item in input[monkey_index].give_items() {
                 let inspected_item = monkey.inspect(item);
-                input[monkey.test(inspected_item)].items.push(inspected_item);
+                input[monkey.test(inspected_item)]
+                    .items
+                    .push(inspected_item);
             }
         }
     }
@@ -154,8 +156,30 @@ fn solve_part1(mut input: Input) -> usize {
         .product()
 }
 
-fn solve_part2(input: Input) -> usize {
-    0
+fn solve_part2(mut input: Input) -> usize {
+    for round in 0..10000 {
+        info!("Round: {} -------------------", round);
+        for (index, monkey) in input.iter().enumerate() {
+            info!("Monkey {}: {:?}", index, monkey.items)
+        }
+        for monkey_index in 0..input.len() {
+            let monkey = input[monkey_index].clone();
+            for item in input[monkey_index].give_items() {
+                let inspected_item = monkey.inspect(item);
+                input[monkey.test(inspected_item)]
+                    .items
+                    .push(inspected_item);
+            }
+        }
+    }
+    input
+        .into_iter()
+        .map(|monkey| monkey.items_handled)
+        .sorted()
+        .rev()
+        .take(2)
+        .inspect(|handled| println!("{}", handled))
+        .product()
 }
 
 #[cfg(test)]
