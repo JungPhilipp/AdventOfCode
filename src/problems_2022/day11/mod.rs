@@ -1,6 +1,5 @@
 use itertools::Itertools;
-use log::{info, debug};
-use num::BigInt;
+use log::info;
 use primes::is_prime;
 
 macro_rules! INPUT_PATH {
@@ -19,22 +18,25 @@ pub fn solve() {
     );
 }
 
+const MAX: usize = 23 * 19 * 17 * 13 * 11 * 7 * 5 * 3 * 2;
+
 #[derive(Debug, Clone)]
 struct Item {
-    number: BigInt,
+    number: usize,
 }
 
 impl Item {
     fn new(number: usize) -> Item {
-        Item {number:  number.into() }
+        Item { number }
     }
 
     fn is_divisible_by(&self, divisor: usize) -> bool {
-        self.number.clone() % divisor == 0.into()
+        self.number % divisor == 0
     }
 
     fn mult(&mut self, number: usize) {
         self.number *= number;
+        self.normalize();
     }
 
     fn add(&mut self, number: usize) {
@@ -43,10 +45,17 @@ impl Item {
 
     fn square(&mut self) {
         self.number = self.number.pow(2);
+        self.normalize();
     }
 
     fn div(&mut self, number: usize) {
-        self.number /= number;
+        if number != 1 {
+            self.number /= number;
+        }
+    }
+
+    fn normalize(&mut self) {
+        self.number %= MAX;
     }
 }
 
@@ -199,54 +208,35 @@ fn parse(input: &str) -> Input {
         .collect_vec()
 }
 
-fn solve_part1(mut input: Input) -> usize {
-    for round in 0..20 {
-        for (index, monkey) in input.iter().enumerate() {
-        }
-        for monkey_index in 0..input.len() {
-            let monkey = input[monkey_index].clone();
-            for item in input[monkey_index].give_items() {
-                let inspected_item = monkey.inspect(item, 3);
-                input[monkey.test(&inspected_item)]
+fn play_rounds(rounds: usize, mut monkeys: Input, relief: usize) -> usize {
+    for _ in 0..rounds {
+        for monkey_index in 0..monkeys.len() {
+            let monkey = monkeys[monkey_index].clone();
+            for item in monkeys[monkey_index].give_items() {
+                let inspected_item = monkey.inspect(item, relief);
+                monkeys[monkey.test(&inspected_item)]
                     .items
                     .push(inspected_item);
             }
         }
     }
-    input
+    monkeys
         .into_iter()
         .map(|monkey| monkey.items_handled)
         .sorted()
         .rev()
         .take(2)
-        .inspect(|handled| println!("{}", handled))
+        .inspect(|handled| info!("Handles: {} items", handled))
         .product()
 }
 
-fn solve_part2(mut input: Input) -> usize {
-    for round in 0..10000 {
-        info!("Round: {} -------------------", round);
-        for (index, monkey) in input.iter().enumerate() {
-            debug!("Monkey {}: {:?}", index, monkey.items)
-        }
-        for monkey_index in 0..input.len() {
-            let monkey = input[monkey_index].clone();
-            for item in input[monkey_index].give_items() {
-                let inspected_item = monkey.inspect(item, 1);
-                input[monkey.test(&inspected_item)]
-                    .items
-                    .push(inspected_item);
-            }
-        }
-    }
-    input
-        .into_iter()
-        .map(|monkey| monkey.items_handled)
-        .sorted()
-        .rev()
-        .take(2)
-        .inspect(|handled| println!("{}", handled))
-        .product()
+fn solve_part1(input: Input) -> usize {
+    play_rounds(20, input, 3)
+}
+
+fn solve_part2(input: Input) -> usize {
+    //play_rounds(10_000_000, input, 1)
+    play_rounds(10_000, input, 1)
 }
 
 #[cfg(test)]
@@ -280,6 +270,6 @@ mod tests {
 
     #[test]
     fn part2() {
-        assert_eq!(solve_part2(parse(include_str!(INPUT_PATH!()))), 0);
+        assert_eq!(solve_part2(parse(include_str!(INPUT_PATH!()))), 13119526120);
     }
 }
