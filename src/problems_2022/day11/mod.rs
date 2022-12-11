@@ -223,10 +223,12 @@ fn play_rounds(rounds: usize, mut monkeys: Input, relief: usize) -> usize {
     monkeys
         .into_iter()
         .map(|monkey| monkey.items_handled)
-        .sorted()
+        .enumerate()
+        .sorted_by(|a, b| Ord::cmp(&a.1, &b.1))
         .rev()
         .take(2)
-        .inspect(|handled| info!("Handles: {} items", handled))
+        .inspect(|(index, count)| info!("Monkey {}: {} items", index, count))
+        .map(|(_, count)| count)
         .product()
 }
 
