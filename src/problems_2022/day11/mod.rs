@@ -1,5 +1,7 @@
 use itertools::Itertools;
-use log::info;
+use log::{info, debug};
+use num::BigInt;
+use primes::is_prime;
 
 macro_rules! INPUT_PATH {
     () => {
@@ -18,43 +20,92 @@ pub fn solve() {
 }
 
 #[derive(Debug, Clone)]
+struct Item {
+    number: BigInt,
+}
+
+impl Item {
+    fn new(number: usize) -> Item {
+        Item {number:  number.into() }
+    }
+
+    fn is_divisible_by(&self, divisor: usize) -> bool {
+        self.number.clone() % divisor == 0.into()
+    }
+
+    fn mult(&mut self, number: usize) {
+        self.number *= number;
+    }
+
+    fn add(&mut self, number: usize) {
+        self.number += number;
+    }
+
+    fn square(&mut self) {
+        self.number = self.number.pow(2);
+    }
+
+    fn div(&mut self, number: usize) {
+        self.number /= number;
+    }
+}
+
+#[derive(Debug, Clone)]
 struct Monkey {
-    items: Vec<usize>,
-    op: String,
+    items: Vec<Item>,
+    op: (Op, Operant),
     test: usize,
     true_target: usize,
     false_target: usize,
     items_handled: usize,
 }
 
+#[derive(Debug, Clone)]
+enum Operant {
+    Number(usize),
+    Old,
+}
+
+#[derive(Debug, Clone)]
+enum Op {
+    Mult,
+    Add,
+}
+
+impl Op {
+    fn is_mult(&self) -> bool {
+        match self {
+            Op::Mult => true,
+            Op::Add => false,
+        }
+    }
+}
+
 impl Monkey {
-    fn inspect(&self, mut item: usize) -> usize {
-        let (op, rhs) = self.op.split(' ').collect_tuple().expect("two parts");
-        let rhs = match rhs.trim().parse::<usize>() {
-            Ok(n) => n,
-            Err(_) => {
-                assert!(rhs.trim() == "old");
-                item
+    fn inspect(&self, mut item: Item, relief: usize) -> Item {
+        match self.op.1.clone() {
+            Operant::Number(number) => match self.op.0 {
+                Op::Mult => item.mult(number),
+                Op::Add => item.add(number),
+            },
+            Operant::Old => {
+                assert!(self.op.0.is_mult());
+                item.square();
             }
         };
-        match op.trim() {
-            "*" => item *= rhs,
-            "+" => item += rhs,
-            _ => unreachable!(),
-        };
-        item / 3
+        item.div(relief);
+        item
     }
 
-    fn test(&self, item: usize) -> usize {
-        if item % self.test == 0 {
+    fn test(&self, item: &Item) -> usize {
+        if item.is_divisible_by(self.test) {
             self.true_target
         } else {
             self.false_target
         }
     }
 
-    fn give_items(&mut self) -> Vec<usize> {
-        //info!("Handle items {} + {}", self.items_handled, self.items.len());
+    fn give_items(&mut self) -> Vec<Item> {
         self.items_handled += self.items.len();
         let items = self.items.clone();
         self.items.clear();
@@ -79,7 +130,7 @@ fn parse(input: &str) -> Input {
                 .expect("to exist")
                 .split(',')
                 .into_iter()
-                .map(|item| item.trim().parse::<usize>().expect("a number"))
+                .map(|item| Item::new(item.trim().parse::<usize>().expect("a number")))
                 .collect_vec();
             let op = lines
                 .next()
@@ -88,7 +139,21 @@ fn parse(input: &str) -> Input {
                 .strip_prefix("Operation: new = old")
                 .expect("to exist")
                 .trim()
-                .to_string();
+                .split(' ')
+                .collect_tuple()
+                .map(|(first, second)| {
+                    let op = match first {
+                        "*" => Op::Mult,
+                        "+" => Op::Add,
+                        _ => unreachable!(),
+                    };
+                    let operant = match second.parse::<usize>() {
+                        Ok(n) => Operant::Number(n),
+                        Err(_) => Operant::Old,
+                    };
+                    (op, operant)
+                })
+                .expect("");
 
             let test = lines
                 .next()
@@ -98,6 +163,10 @@ fn parse(input: &str) -> Input {
                 .expect("to exist")
                 .trim()
                 .parse::<usize>()
+                .map(|number| {
+                    assert!(is_prime(number as u64));
+                    number
+                })
                 .expect("a number");
             let true_target_monkey = lines
                 .next()
@@ -132,15 +201,13 @@ fn parse(input: &str) -> Input {
 
 fn solve_part1(mut input: Input) -> usize {
     for round in 0..20 {
-        info!("Round: {} -------------------", round);
         for (index, monkey) in input.iter().enumerate() {
-            info!("Monkey {}: {:?}", index, monkey.items)
         }
         for monkey_index in 0..input.len() {
             let monkey = input[monkey_index].clone();
             for item in input[monkey_index].give_items() {
-                let inspected_item = monkey.inspect(item);
-                input[monkey.test(inspected_item)]
+                let inspected_item = monkey.inspect(item, 3);
+                input[monkey.test(&inspected_item)]
                     .items
                     .push(inspected_item);
             }
@@ -160,13 +227,13 @@ fn solve_part2(mut input: Input) -> usize {
     for round in 0..10000 {
         info!("Round: {} -------------------", round);
         for (index, monkey) in input.iter().enumerate() {
-            info!("Monkey {}: {:?}", index, monkey.items)
+            debug!("Monkey {}: {:?}", index, monkey.items)
         }
         for monkey_index in 0..input.len() {
             let monkey = input[monkey_index].clone();
             for item in input[monkey_index].give_items() {
-                let inspected_item = monkey.inspect(item);
-                input[monkey.test(inspected_item)]
+                let inspected_item = monkey.inspect(item, 1);
+                input[monkey.test(&inspected_item)]
                     .items
                     .push(inspected_item);
             }
@@ -200,12 +267,15 @@ mod tests {
 
     #[test]
     fn part1() {
-        assert_eq!(solve_part1(parse(include_str!(INPUT_PATH!()))), 0);
+        assert_eq!(solve_part1(parse(include_str!(INPUT_PATH!()))), 54253);
     }
 
     #[test]
     fn example_1_2() {
-        //assert_eq!(solve_part2(parse(include_str!(EXAMPLE_PATH!()))), 0);
+        assert_eq!(
+            solve_part2(parse(include_str!(EXAMPLE_PATH!()))),
+            2713310158
+        );
     }
 
     #[test]
