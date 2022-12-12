@@ -72,7 +72,7 @@ fn get_neighbors(point: &Point, map: &Array2<i32>) -> Vec<Point> {
         .filter(|&(x_new, y_new)| {
             if x_new >= 0 && x_new < *x_len as i32 && y_new >= 0 && y_new < *y_len as i32 {
                 let height_new = map[(x_new as usize, y_new as usize)];
-                (height - height_new).abs() <= 1
+                height_new <= height + 1
             } else {
                 false
             }
@@ -114,7 +114,6 @@ fn solve_part1(input: Input) -> usize {
     for point in visited.keys() {
         visited_map[(point.0 as usize, point.1 as usize)] = 1;
     }
-    info!("\n{:?}", visited_map);
 
     visited.get(&end).expect("path should be found").1
 }
@@ -137,13 +136,12 @@ mod tests {
     #[test]
     fn example_1() {
         let input = parse(include_str!(EXAMPLE_PATH!()));
-        assert_eq!(get_neighbors(&(0, 0), &input.0), vec![(1, 0), (0, 1)]);
         assert_eq!(solve_part1(input), 31);
     }
 
     #[test]
     fn part1() {
-        assert_eq!(solve_part1(parse(include_str!(INPUT_PATH!()))), 0);
+        assert_eq!(solve_part1(parse(include_str!(INPUT_PATH!()))), 534);
     }
 
     #[test]
