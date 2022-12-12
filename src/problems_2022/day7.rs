@@ -240,7 +240,7 @@ fn solve_part2(input: Input) -> usize {
         .filter_map(|dir| match dir.borrow().item.get_size() {
             x if x < missing => None,
             x if x >= missing => Some(x),
-            _ => unreachable!()
+            _ => unreachable!(),
         })
         .min()
         .expect("One dir to be larger than the missing space")
