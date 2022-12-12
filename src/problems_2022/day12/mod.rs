@@ -1,9 +1,8 @@
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::{HashMap, VecDeque};
 
 use itertools::Itertools;
 use log::info;
 use ndarray::Array2;
-use num::ToPrimitive;
 
 macro_rules! INPUT_PATH {
     () => {
@@ -80,19 +79,17 @@ fn get_neighbors(point: &Point, map: &Array2<i32>) -> Vec<Point> {
         .collect_vec()
 }
 
-fn solve_part1(input: Input) -> usize {
-    let (map, start, end) = input;
-    info!("\n{:?}, \n{:?}, \n{:?}", map, start, end);
+fn find_path(start: &Point, end: &Point, map: &Array2<i32>) -> Option<usize> {
     let mut queue = VecDeque::<(Point, Point, usize)>::new();
     let mut visited = HashMap::<Point, (Point, usize)>::new();
-    queue.push_back((start, start, 0));
+    queue.push_back((*start, *start, 0));
     while let Some((current, current_parent, current_distance)) = queue.pop_front() {
         if visited.contains_key(&current) {
             continue;
         }
         visited.insert(current, (current_parent, current_distance));
 
-        let neighbors = get_neighbors(&current, &map);
+        let neighbors = get_neighbors(&current, map);
         let new_distance = current_distance + 1;
 
         for neighbor in neighbors {
@@ -115,11 +112,30 @@ fn solve_part1(input: Input) -> usize {
         visited_map[(point.0 as usize, point.1 as usize)] = 1;
     }
 
-    visited.get(&end).expect("path should be found").1
+    visited.get(end).map(|(_, distance)| *distance)
+}
+
+fn solve_part1(input: Input) -> usize {
+    let (map, start, end) = input;
+    info!("\n{:?}, \n{:?}, \n{:?}", map, start, end);
+    find_path(&start, &end, &map).expect("Should find a path")
 }
 
 fn solve_part2(input: Input) -> usize {
-    0
+    let (map, _, end) = input;
+    let (x_len, y_len) = map.shape().iter().collect_tuple().expect("two dimensions");
+    let mut min = usize::MAX;
+    for x in 0..*x_len {
+        for y in 0..*y_len {
+            let height = map[(x, y)];
+            if height == 0 {
+                if let Some(steps) = find_path(&(x as i32, y as i32), &end, &map) {
+                    min = Ord::min(steps, min);
+                }
+            }
+        }
+    }
+    min
 }
 
 #[cfg(test)]
@@ -146,11 +162,11 @@ mod tests {
 
     #[test]
     fn example_1_2() {
-        assert_eq!(solve_part2(parse(include_str!(EXAMPLE_PATH!()))), 0);
+        assert_eq!(solve_part2(parse(include_str!(EXAMPLE_PATH!()))), 29);
     }
 
     #[test]
     fn part2() {
-        assert_eq!(solve_part2(parse(include_str!(INPUT_PATH!()))), 0);
+        assert_eq!(solve_part2(parse(include_str!(INPUT_PATH!()))), 525);
     }
 }
