@@ -119,7 +119,7 @@ fn solve_part1(input: Input) -> usize {
             debug!("Pair: {}", index);
             (index, compare_packet(&mut lhs, &mut rhs))
         })
-        .filter_map(|(index, valid)| if valid { Some(index + 1) } else { None })
+        .filter_map(|(index, valid)| if valid { Some(index) } else { None })
         .inspect(|index| info!("Valid pair at {}", index))
         .sum()
 }
