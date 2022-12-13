@@ -144,14 +144,13 @@ fn solve_part1(input: Input) -> usize {
 }
 
 type Input2 = Vec<String>;
-const div_1: &str = "[[2]]";
-const div_2: &str = "[[6]]";
+const DIVIDERS: [&str; 2] = ["[[2]]", "[[6]]"];
 
 fn parse_part2(input: Input) -> Input2 {
     input
         .into_iter()
         .flat_map(|(first, second)| [first, second])
-        .chain([div_1, div_2].into_iter().map(|i| i.to_string()))
+        .chain(DIVIDERS.into_iter().map(|i| i.to_string()))
         .collect_vec()
 }
 fn solve_part2(input: Input) -> usize {
@@ -163,7 +162,7 @@ fn solve_part2(input: Input) -> usize {
         })
         .enumerate()
         .filter_map(|(index, e)| {
-            if [div_1, div_2].contains(&e.as_str()) {
+            if DIVIDERS.contains(&e.as_str()) {
                 Some(index + 1)
             } else {
                 None
@@ -246,11 +245,11 @@ mod tests {
 
     #[test]
     fn example_1_2() {
-        assert_eq!(solve_part2(parse(include_str!(EXAMPLE_PATH!()))), 0);
+        assert_eq!(solve_part2(parse(include_str!(EXAMPLE_PATH!()))), 140);
     }
 
     #[test]
     fn part2() {
-        assert_eq!(solve_part2(parse(include_str!(INPUT_PATH!()))), 0);
+        assert_eq!(solve_part2(parse(include_str!(INPUT_PATH!()))), 20592);
     }
 }
