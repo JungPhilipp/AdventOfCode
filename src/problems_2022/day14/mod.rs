@@ -1,12 +1,10 @@
 use std::{
     cmp::{max, min},
     collections::HashSet,
-    iter,
 };
 
 use itertools::Itertools;
-use log::{debug, info};
-use primes::is_prime;
+use log::info;
 
 macro_rules! INPUT_PATH {
     () => {
@@ -42,9 +40,8 @@ fn parse(input: &str) -> Input {
                 .tuple_windows()
                 .flat_map(|(a, b)| {
                     assert!(a.0 == b.0 || a.1 == b.1);
-                    (min(a.0, b.0)..=max(a.0, b.0)).flat_map(move |i| {
-                        (min(a.1, b.1)..=max(a.1, b.1)).map(move |j| (i, j))
-                    })
+                    (min(a.0, b.0)..=max(a.0, b.0))
+                        .flat_map(move |i| (min(a.1, b.1)..=max(a.1, b.1)).map(move |j| (i, j)))
                 })
         })
         .collect()
