@@ -1,8 +1,4 @@
-use std::{
-    cmp::{max, min},
-    collections::HashSet,
-    ops::Index,
-};
+use std::cmp::max;
 
 use itertools::Itertools;
 use log::info;
@@ -20,7 +16,7 @@ pub fn solve() {
     info!(
         "Solutions Day 15:\nPart1{}\nPart2{}",
         solve_part1(parsed.clone(), 2000000),
-        solve_part2(parsed, 0, 400000),
+        solve_part2(parsed, 400000),
     );
 }
 
@@ -63,40 +59,57 @@ fn manhattan_distance(lhs: &Point, rhs: &Point) -> usize {
     ((lhs.0 - rhs.0).abs() + (lhs.1 - rhs.1).abs()) as usize
 }
 
-fn visible_for_sensor(sensor: &Point, beacon: &Point, point: &Point) -> bool {
-    let sensor_range = manhattan_distance(sensor, beacon);
-    let dist_to_point = manhattan_distance(sensor, point);
-    dist_to_point <= sensor_range
+type Interval = (i32, i32);
+fn compute_intervals(input: &Input, row: i32) -> Vec<Interval> {
+    input
+        .iter()
+        .filter_map(|(sensor, beacon)| {
+            let distance = manhattan_distance(sensor, beacon);
+            match distance as i32 - (row - sensor.1).abs() {
+                width if width > 0 => Some((sensor.0 - width, sensor.0 + width)),
+                _ => None,
+            }
+        })
+        .sorted()
+        .rev()
+        .collect()
 }
 
 fn solve_part1(input: Input, row: i32) -> usize {
-    let max_x = 10_000_000;
-    let mut impossible_positions = 0;
-    for x in -max_x..=max_x {
-        let point = (x, row);
-        for (sensor, beacon) in input.iter() {
-            if point == *sensor || point == *beacon {
-                break;
-            }
-            if visible_for_sensor(sensor, beacon, &point) {
-                info!("{:?}", point);
-                impossible_positions += 1;
-                break;
-            }
+    let mut visible_positions = 0;
+    let mut intervals = compute_intervals(&input, row);
+
+    let mut interval = intervals.pop().unwrap();
+    for next_interval in intervals.into_iter().rev() {
+        if interval.1 >= next_interval.0 {
+            interval.1 = max(interval.1, next_interval.1)
+        } else {
+            visible_positions += interval.1 - interval.0;
+            interval = next_interval;
         }
     }
-    impossible_positions
+
+    (interval.1 - interval.0 + visible_positions) as usize
 }
 
-type range = (i32, i32);
-fn solve_part2(input: Input, min: i32, max: i32) -> usize {
-    let x_ranges = vec![];
-    let y_ranges = vec![];
-    let squares = input
-        .into_iter()
-        .map(|(sensor, beacon)| (sensor, manhattan_distance(&sensor, &beacon)))
-        .collect_vec();
-    0
+fn solve_part2(input: Input, length: i32) -> usize {
+    for row in 0..=length {
+        if let Err(x) = std::iter::once((length + 1, i32::MAX))
+            .chain(compute_intervals(&input, row).into_iter())
+            .rev()
+            .try_fold(0, |x, next_interval| {
+                if x + 1 < next_interval.0 {
+                    Err(x + 1)
+                } else {
+                    Ok(max(x, next_interval.1))
+                }
+            })
+        {
+            info!("Found: {:?}", (x, row));
+            return x as usize * 4000000 + row as usize;
+        }
+    }
+    unreachable!()
 }
 
 #[cfg(test)]
@@ -127,7 +140,7 @@ mod tests {
     #[test]
     fn example_1_2() {
         assert_eq!(
-            solve_part2(parse(include_str!(EXAMPLE_PATH!())), 0, 20),
+            solve_part2(parse(include_str!(EXAMPLE_PATH!())), 20),
             56000011
         );
     }
@@ -135,8 +148,8 @@ mod tests {
     #[test]
     fn part2() {
         assert_eq!(
-            solve_part2(parse(include_str!(INPUT_PATH!())), 0, 4000000),
-            0
+            solve_part2(parse(include_str!(INPUT_PATH!())), 4000000),
+            10884459367718
         );
     }
 }
