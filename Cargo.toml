@@ -12,7 +12,7 @@ env_logger = "*"
 test-log = "*"
 num = "*"
 itertools = "*"
-regex = "*"
+regex = "1.6.0"
 ndarray = "*"
 primes = "*"
 
