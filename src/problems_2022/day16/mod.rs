@@ -1,6 +1,6 @@
 use std::{
     cmp::{max, min},
-    collections::{BTreeSet, HashMap, HashSet, VecDeque},
+    collections::HashMap,
 };
 
 use itertools::Itertools;
@@ -146,14 +146,14 @@ fn max_flow_vec(
     let (flow_rate_1, neighbors_1) = graph.get(&rooms.0).unwrap();
     let (flow_rate_2, neighbors_2) = graph.get(&rooms.1).unwrap();
 
-    for (neighbor_1, costs_1) in neighbors_1.iter()
+    for (neighbor_1, _) in neighbors_1.iter()
     /*.chain([(rooms.0, 1)].iter()) */
     {
         if *neighbor_1 == rooms.0 && (*flow_rate_1 == 0 || opened.contains(&rooms.0)) {
             continue;
         }
 
-        for (neighbor_2, costs_2) in neighbors_2.iter()
+        for (neighbor_2, _) in neighbors_2.iter()
         /*.chain([rooms.1].iter()) */
         {
             let mut flow_inner = 0;

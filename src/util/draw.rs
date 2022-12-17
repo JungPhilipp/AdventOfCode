@@ -1,7 +1,6 @@
-use std::collections::HashSet;
-
-pub fn grid_to_string(points: &[(i32, i32)]) -> String {
-    let min = {
+#![allow(unused)]
+pub fn grid_to_string(points: &[(i64, i64)]) -> String {
+    let _min = {
         (
             *points.iter().map(|(x, _)| x).min().unwrap(),
             *points.iter().map(|(_, y)| y).min().unwrap(),
@@ -14,7 +13,7 @@ pub fn grid_to_string(points: &[(i32, i32)]) -> String {
         )
     };
 
-    //let hash_points: HashSet<(i32, i32)> = points
+    //let hash_points: HashSet<(i64, i64)> = points
     //    .iter()
     //    .map(|point| (point.0 - min.0, point.1 - min.1))
     //    .collect();
