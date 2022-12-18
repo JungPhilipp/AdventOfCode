@@ -1,10 +1,10 @@
 use std::{
     cmp::{max, min},
-    collections::HashSet,
+    collections::{HashMap, HashSet},
 };
 
 use itertools::Itertools;
-use log::info;
+use log::{debug, info};
 
 macro_rules! INPUT_PATH {
     () => {
@@ -60,8 +60,84 @@ fn solve_part1(input: Input) -> usize {
         .count()
 }
 
+fn is_background(
+    cache_background: &mut HashSet<Point>,
+    cache_not_background: &mut HashSet<Point>,
+    x_range: (i32, i32),
+    y_range: (i32, i32),
+    z_range: (i32, i32),
+    point: &Point,
+) -> bool {
+    if cache_background.contains(&point) {
+        return true;
+    }
+
+    if cache_not_background.contains(&point) {
+        return false;
+    }
+
+    let mut queue = vec![*point];
+    let mut visited = HashSet::<Point>::new();
+    while let Some(p) = queue.pop() {
+        if cache_background.contains(&p)
+            || (p.0 < x_range.0 || p.0 > x_range.1)
+            || (p.1 < y_range.0 || p.1 > y_range.1)
+            || (p.2 < z_range.0 || p.2 > z_range.1)
+        {
+            cache_background.insert(p);
+            return true;
+        }
+        if visited.contains(&p) || cache_not_background.contains(&p) {
+            continue;
+        }
+        visited.insert(p);
+
+        for neighbor in cube_sides(&p) {
+            queue.push(neighbor);
+        }
+    }
+    cache_not_background.insert(*point);
+    false
+}
+
 fn solve_part2(input: Input) -> usize {
-    0
+    let x_range = match input.iter().map(|(x, _, _)| x).minmax() {
+        itertools::MinMaxResult::NoElements => unreachable!(),
+        itertools::MinMaxResult::OneElement(_) => unreachable!(),
+        itertools::MinMaxResult::MinMax(min, max) => (*min, *max),
+    };
+
+    let y_range = match input.iter().map(|(_, y, _)| y).minmax() {
+        itertools::MinMaxResult::NoElements => unreachable!(),
+        itertools::MinMaxResult::OneElement(_) => unreachable!(),
+        itertools::MinMaxResult::MinMax(min, max) => (*min, *max),
+    };
+
+    let z_range = match input.iter().map(|(_, _, z)| z).minmax() {
+        itertools::MinMaxResult::NoElements => unreachable!(),
+        itertools::MinMaxResult::OneElement(_) => unreachable!(),
+        itertools::MinMaxResult::MinMax(min, max) => (*min, *max),
+    };
+
+    let mut cache_background = HashSet::new();
+    let mut cache_not_background: HashSet<Point> = input.iter().cloned().collect();
+
+    debug!("{:?}, {:?}, {:?}", x_range, y_range, z_range);
+
+    input
+        .iter()
+        .flat_map(cube_sides)
+        .filter(|side| {
+            is_background(
+                &mut cache_background,
+                &mut cache_not_background,
+                x_range,
+                y_range,
+                z_range,
+                side,
+            )
+        })
+        .count()
 }
 
 #[cfg(test)]
@@ -109,16 +185,16 @@ mod tests {
 
     #[test]
     fn part1() {
-        assert_eq!(solve_part1(parse(include_str!(INPUT_PATH!()))), 0);
+        assert_eq!(solve_part1(parse(include_str!(INPUT_PATH!()))), 4282);
     }
 
     #[test]
     fn example_2() {
-        assert_eq!(solve_part2(parse(include_str!(EXAMPLE_PATH!()))), 0);
+        assert_eq!(solve_part2(parse(include_str!(EXAMPLE_PATH!()))), 58);
     }
 
     #[test]
     fn part2() {
-        assert_eq!(solve_part2(parse(include_str!(INPUT_PATH!()))), 0);
+        assert_eq!(solve_part2(parse(include_str!(INPUT_PATH!()))), 2452);
     }
 }
