@@ -84,7 +84,7 @@ fn is_background(
             || (p.1 < y_range.0 || p.1 > y_range.1)
             || (p.2 < z_range.0 || p.2 > z_range.1)
         {
-            cache_background.insert(p);
+            cache_background.extend(visited);
             return true;
         }
         if visited.contains(&p) || cache_not_background.contains(&p) {
@@ -96,7 +96,7 @@ fn is_background(
             queue.push(neighbor);
         }
     }
-    cache_not_background.insert(*point);
+    cache_not_background.extend(visited);
     false
 }
 
