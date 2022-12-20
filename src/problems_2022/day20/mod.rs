@@ -1,11 +1,5 @@
-use std::{
-    cmp::{max, min},
-    collections::{HashMap, HashSet, VecDeque},
-};
-
 use itertools::Itertools;
-use log::{debug, info};
-use regex::Regex;
+use log::info;
 
 macro_rules! INPUT_PATH {
     () => {
@@ -34,8 +28,7 @@ fn parse(input: &str) -> Input {
 }
 
 fn mix(vec: &mut [i64], mut index: usize, mut dest: i64) {
-    dest = dest.signum() * (dest.abs() % (vec.len() * vec.len() - 1) as i64);
-    let  rotations = dest.abs() / vec.len() as i64;
+    dest = dest.signum() * (dest.abs() % (vec.len() - 1) as i64);
     while dest != 0 {
         let new_index = {
             match index as i64 + dest.signum() {
@@ -45,8 +38,6 @@ fn mix(vec: &mut [i64], mut index: usize, mut dest: i64) {
             }
         };
         vec.swap(index, new_index);
-
-        debug!("{dest}: {index} -> {new_index}");
         index = new_index;
         dest -= dest.signum();
     }
@@ -55,7 +46,6 @@ fn mix(vec: &mut [i64], mut index: usize, mut dest: i64) {
 fn mix_vec(input: &mut Input, tracking: &mut [i64]) {
     let count = input.len();
     for original_index in 0..count {
-        debug!("Move {original_index}/{count}");
         let (index, _) = tracking
             .iter()
             .find_position(|i| **i == original_index as i64)
@@ -86,8 +76,7 @@ fn solve_part2(mut input: Input) -> i64 {
     input.iter_mut().for_each(|e| *e *= key);
     let mut tracking = (0..input.len() as i64).collect_vec();
 
-    for rep in 0..10 {
-        info!("Mix {rep}/10");
+    for _ in 0..10 {
         mix_vec(&mut input, &mut tracking);
     }
 
@@ -132,6 +121,9 @@ mod tests {
 
     #[test]
     fn part2() {
-        assert_eq!(solve_part2(parse(include_str!(INPUT_PATH!()))), 0);
+        assert_eq!(
+            solve_part2(parse(include_str!(INPUT_PATH!()))),
+            6871725358451
+        );
     }
 }
