@@ -1,6 +1,5 @@
 use std::{
-    cmp::{max, min},
-    collections::{HashMap, HashSet},
+    collections::{HashSet},
 };
 
 use itertools::Itertools;
@@ -68,11 +67,11 @@ fn is_background(
     z_range: (i32, i32),
     point: &Point,
 ) -> bool {
-    if cache_background.contains(&point) {
+    if cache_background.contains(point) {
         return true;
     }
 
-    if cache_not_background.contains(&point) {
+    if cache_not_background.contains(point) {
         return false;
     }
 
