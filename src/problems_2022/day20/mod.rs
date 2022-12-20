@@ -34,6 +34,8 @@ fn parse(input: &str) -> Input {
 }
 
 fn mix(vec: &mut [i64], mut index: usize, mut dest: i64) {
+    dest = dest.signum() * (dest.abs() % (vec.len() * vec.len() - 1) as i64);
+    let  rotations = dest.abs() / vec.len() as i64;
     while dest != 0 {
         let new_index = {
             match index as i64 + dest.signum() {
@@ -50,33 +52,53 @@ fn mix(vec: &mut [i64], mut index: usize, mut dest: i64) {
     }
 }
 
-fn solve_part1(mut input: Input) -> i64 {
+fn mix_vec(input: &mut Input, tracking: &mut [i64]) {
     let count = input.len();
-    let mut tracking = (0..count as i64).collect_vec();
-
     for original_index in 0..count {
-        info!("Move {original_index}/{count}");
+        debug!("Move {original_index}/{count}");
         let (index, _) = tracking
             .iter()
             .find_position(|i| **i == original_index as i64)
             .unwrap();
         let displacement = input[index];
-        mix(&mut input, index, displacement);
-        mix(&mut tracking, index, displacement);
+        mix(input, index, displacement);
+        mix(tracking, index, displacement);
+    }
+}
+
+fn solve_part1(mut input: Input) -> i64 {
+    let mut tracking = (0..input.len() as i64).collect_vec();
+
+    mix_vec(&mut input, &mut tracking);
+
+    let pos_0 = input.iter().find_position(|&&v| v == 0).unwrap();
+
+    [1000, 2000, 3000]
+        .into_iter()
+        .map(|offset| (pos_0.0 + offset) % input.len())
+        .map(|index| input[index])
+        .inspect(|e| info!("{e}"))
+        .sum()
+}
+
+fn solve_part2(mut input: Input) -> i64 {
+    let key = 811589153;
+    input.iter_mut().for_each(|e| *e *= key);
+    let mut tracking = (0..input.len() as i64).collect_vec();
+
+    for rep in 0..10 {
+        info!("Mix {rep}/10");
+        mix_vec(&mut input, &mut tracking);
     }
 
     let pos_0 = input.iter().find_position(|&&v| v == 0).unwrap();
 
     [1000, 2000, 3000]
         .into_iter()
-        .map(|offset| (pos_0.0 + offset) % count)
+        .map(|offset| (pos_0.0 + offset) % input.len())
         .map(|index| input[index])
         .inspect(|e| info!("{e}"))
         .sum()
-}
-
-fn solve_part2(input: Input) -> usize {
-    0
 }
 
 #[cfg(test)]
@@ -102,7 +124,10 @@ mod tests {
 
     #[test]
     fn example_2() {
-        assert_eq!(solve_part2(parse(include_str!(EXAMPLE_PATH!()))), 0);
+        assert_eq!(
+            solve_part2(parse(include_str!(EXAMPLE_PATH!()))),
+            1623178306
+        );
     }
 
     #[test]
