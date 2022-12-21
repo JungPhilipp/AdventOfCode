@@ -75,8 +75,23 @@ fn solve_part1(input: Input) -> i64 {
     compute("root", &input, &mut HashMap::new())
 }
 
-fn solve_part2(input: Input) -> i64 {
-    0
+fn solve_part2(mut input: Input) -> i64 {
+    let root = input.get_mut("root").unwrap();
+    let root_instruction = match root {
+        Instruction::Op(op) => op.clone(),
+        _ => unreachable!(),
+    };
+    *root = Instruction::Op((root_instruction.0, '-', root_instruction.2));
+    for number in 0..i64::MAX {
+        if number % 10_000 == 0 {
+            info!("{number}");
+        }
+        *input.get_mut("humn").unwrap() = Instruction::Number(number);
+        if compute("root", &input, &mut HashMap::new()) == 0 {
+            return number;
+        }
+    }
+    unreachable!()
 }
 
 #[cfg(test)]
@@ -97,12 +112,15 @@ mod tests {
 
     #[test]
     fn part1() {
-        assert_eq!(solve_part1(parse(include_str!(INPUT_PATH!()))), 194501589693264);
+        assert_eq!(
+            solve_part1(parse(include_str!(INPUT_PATH!()))),
+            194501589693264
+        );
     }
 
     #[test]
     fn example_2() {
-        assert_eq!(solve_part2(parse(include_str!(EXAMPLE_PATH!()))), 0);
+        assert_eq!(solve_part2(parse(include_str!(EXAMPLE_PATH!()))), 301);
     }
 
     #[test]
