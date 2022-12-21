@@ -1,10 +1,3 @@
-1
-2
--3
-3
--2
-0
-4
 root: pppw + sjmn
 dbpl: 5
 cczh: sllz + lgvd
