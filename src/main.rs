@@ -4,6 +4,7 @@
 #![feature(result_option_inspect)]
 #![feature(hash_drain_filter)]
 #![feature(test)]
+#![feature(variant_count)]
 
 
 mod playground;

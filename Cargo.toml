@@ -7,12 +7,13 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-log = {version = "*", features = ["release_max_level_info"]}
+log = { version = "*", features = ["release_max_level_info"] }
 env_logger = "*"
 test-log = "*"
 num = "*"
+num-derive = "*"
+num-traits = "*"
 itertools = "*"
 regex = "1.6.0"
 ndarray = "*"
 primes = "*"
-

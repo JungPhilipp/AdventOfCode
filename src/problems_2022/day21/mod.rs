@@ -123,7 +123,7 @@ fn solve_part1(input: Input) -> i64 {
     compute(&['r', 'o', 'o', 't'], &input, &mut HashMap::new()).unwrap()
 }
 
-fn precompute_cache(mut monkeys: Input) -> HashMap<[char; 4], i64> {
+fn precompute_cache(monkeys: Input) -> HashMap<[char; 4], i64> {
     let mut cache = HashMap::new();
 
     for (name, _) in monkeys.iter() {
