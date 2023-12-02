@@ -1,3 +1,4 @@
+#![allow(warnings)]
 mod day23;
 mod day24;
 mod problem1;

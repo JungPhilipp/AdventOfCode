@@ -1,3 +1,4 @@
+#![allow(warnings)]
 mod problem1;
 mod problem10;
 mod problem2;
